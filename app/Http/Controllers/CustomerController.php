@@ -34,7 +34,9 @@ class CustomerController extends Controller
 
     public function listAjax(Request $request){
 
-        $customers = Customer::getListByFilters($request);
+        $customers          = Customer::getListByFilters($request);
+        $listTeams          = Team::where('tenancy_id', Auth::user()->tenancy_id)->get();
+        $listUsers          = User::where('tenancy_id', Auth::user()->tenancy_id)->get();
 
         $listView = (request('setListView')?request('setListView'):'list-customers-default');
         $orderbyfield = "";
@@ -46,7 +48,7 @@ class CustomerController extends Controller
         }
 
 
-        return view('customers.components.list-templates.'.$listView, compact('customers', 'orderbyfield', 'orderbyorder'));
+        return view('customers.components.list-templates.'.$listView, compact('customers', 'orderbyfield', 'orderbyorder', 'listTeams', 'listUsers'));
     }
 
     /**
@@ -80,6 +82,13 @@ class CustomerController extends Controller
         } else {
             return redirect()->back()->with('error', 'Houve algum erro ao adicionar o lead.');
         }
+    }
+
+    public function redirect(Request $request, Customer $customer){
+        $team = Team::find($request->team_id);
+        $user = User::find($request->user_id);
+        $customer->redirect($user?$user:false, $team?$team:false);
+        return back()->with('success', 'Redirecionado');
     }
 
     /**
@@ -140,7 +149,7 @@ class CustomerController extends Controller
     }
 
     public function listSales(){
-        $customers = Customer::where([['stage_id', '>', '6'],['stage_id', '<', '10']])->get();
+        $customers = Customer::where([['stage_id', '>', '6'],['stage_id', '<', '10'], ['tenancy_id', '=', Auth::user()->tenancy_id]])->get();
         return view('customers.list-sales', compact('customers'));
     }
 }

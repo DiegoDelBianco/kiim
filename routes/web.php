@@ -10,6 +10,11 @@ use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\CustomerServiceController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\WebsiteController;
+use App\Http\Controllers\TenancyController;
+use App\Http\Controllers\SysProductController;
+use App\Http\Controllers\SysProductTenancyController;
+use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\MetricsController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -24,7 +29,8 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return redirect()->route('login');
+    //return redirect()->route('login');
+    return view('public');
 });
 
 
@@ -39,8 +45,9 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    // Atualização automatica de notificações no sininho
+    // Atualização automatica de notificações
     Route::get('notifications/get',[App\Http\Controllers\NotifyUserController::class, 'getNotificationsData'])->name('notifications.get');
+    Route::get('get-label-menu', [App\Http\Controllers\NotifyUserController::class, 'getLabelMenu'])->name('get-label-menu');
 
     // Usuários
     Route::get('/users', [UserController::class, 'index'])->name('users');
@@ -59,6 +66,7 @@ Route::middleware('auth')->group(function () {
     Route::patch('/customers/edit/{customer}', [CustomerController::class, 'update'])->name('customers.update');
     Route::post('/customers/{customer}/timeline/', [CustomerTimelineController::class, 'store'])->name('customers.timelines.store');
     Route::get('/customers/sales', [CustomerController::class, 'listSales'])->name('customers.sales');
+    Route::post('/customers/redirect/{customer}', [CustomerController::class, 'redirect'])->name('customers.redirect');
     
     // Atendimentos
     Route::get('/customers/customer-service/', [CustomerServiceController::class, 'index'])->name('customers.customer-services');
@@ -90,6 +98,20 @@ Route::middleware('auth')->group(function () {
     Route::get('/websites/edit/{website}', [WebsiteController::class, 'edit'])->name('websites.edit');
     Route::patch('/websites/edit/{website}', [WebsiteController::class, 'update'])->name('websites.update');
     Route::delete('/websites/{website}', [WebsiteController::class, 'destroy'])->name('websites.destroy');
+
+    // Tenancies
+    Route::get('/tenancy', [TenancyController::class, 'index'])->name('tenancies');
+    Route::patch('/tenancy', [TenancyController::class, 'update'])->name('tenancies.update');
+
+    // SysProducts, SysProductsTenancy e Payment
+    Route::get('/sys-product/{sysProduct}', [SysProductController::class, 'show'])->name('sysProduct');
+    Route::post('/sys-product-tenancy/{sysProduct}', [SysProductTenancyController::class, 'store'])->name('sysProductTenancy.store');
+    Route::post('/payment/{sysProductTenancy}', [PaymentController::class, 'store'])->name('payment.store');
+
+    // Métricas
+    Route::get('/metrics', [MetricsController::class, 'index'])->name('metrics');
+    Route::get('/metrics/team/{team', [MetricsController::class, 'index'])->name('metrics.team');
+
 });
 
 Route::get('/pub/leadpage/{website}', [WebsiteController::class, 'show'])->name('public.websites');

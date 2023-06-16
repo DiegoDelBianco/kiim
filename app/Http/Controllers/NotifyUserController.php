@@ -4,8 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreNotifyUserRequest;
 use App\Http\Requests\UpdateNotifyUserRequest;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+
 use App\Models\NotifyUser;
+use App\Models\Customer;
+use App\Models\CustomerService;
 
 class NotifyUserController extends Controller
 {
@@ -131,5 +135,30 @@ class NotifyUserController extends Controller
             'icon_color'  => 'dark',
             'dropdown'    => $dropdownHtml,
         ];
+    }
+
+    public function getLabelMenu(){
+        $customers = 0;
+        $customers_services = 0;
+        $customers_services_remarketing = 0;
+
+        if( Auth::user()->hasRole('Master') ){
+            $customers = Customer::where('tenancy_id', Auth::user()->tenancy_id)->count();
+        }elseif( Auth::user()->hasRole('Gerente') ){
+            $customers = Customer::where('tenancy_id', Auth::user()->tenancy_id)->where('team_id', Auth::user()->team_id)->count();
+        }else
+            $customers = Customer::where('tenancy_id', Auth::user()->tenancy_id)->where('user_id', Auth::user()->id)->count();
+
+        $customers_services = Customer::countQueueByUser();
+        $customers_services_remarketing = Customer::countRemarketingByUser();
+
+        return json_encode([
+            'status'   => 'success',
+            'data'     => [
+                'customers' => $customers,
+                'customers_services' => $customers_services,
+                'customers_services_remarketing' => $customers_services_remarketing,
+            ]
+        ]);
     }
 }

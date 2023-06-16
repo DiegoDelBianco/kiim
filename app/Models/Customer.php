@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class Customer extends Model
 {
@@ -131,6 +132,7 @@ class Customer extends Model
                                             stage_id <> 4 AND
                                             user_id = :user_id AND 
                                             (n_customer_service > 1 OR (n_customer_service = 1 AND opened = 2))
+                                            AND tenancy_id = '.Auth::user()->tenancy_id.'
                                         LIMIT :limit
                                         OFFSET :offset', 
                                         ['user_id' => $user, 'limit' => $limit, 'offset' => ($page*$limit)]);
@@ -156,35 +158,105 @@ class Customer extends Model
             FROM customers WHERE 
                 stage_id <> 7 AND
                 stage_id <> 9 AND
-                user_id = :user_id AND 
-                (n_customer_service > 1 OR (n_customer_service = 1 AND opened = 2))', 
-                ['user_id' => $user->id]);
+                (user_id = :user_id OR (team_id = :team_id and (user_id IS NULL OR user_id = "")) OR ((user_id IS NULL OR user_id = "") AND (team_id IS NULL OR team_id = ""))) 
+                AND  (n_customer_service > 1 OR (n_customer_service = 1 AND opened = 2))
+                AND tenancy_id = '.Auth::user()->tenancy_id, 
+                ['user_id' => $user->id, 'team_id' => $user->team_id]);
+
+            return $remarketingList[0]->count;
+    }
+
+    public static function countQueueByUser($user = false){
+
+        if($user === false) $user = Auth::user();
+        
+        $remarketingList = DB::select('SELECT 
+            count(id) AS count
+            FROM customers WHERE 
+                (user_id = :user_id OR (team_id = :team_id and (user_id IS NULL OR user_id = "")) OR ((user_id IS NULL OR user_id = "") AND (team_id IS NULL OR team_id = ""))) 
+                AND  n_customer_service = 0 and opened = 2
+                AND tenancy_id = '.Auth::user()->tenancy_id, 
+                ['user_id' => $user->id, 'team_id' => $user->team_id]);
 
             return $remarketingList[0]->count;
     }
 
     // Direciona o custmer para um novo usuario
-    public function redirectCustomer(User $user){
+    public function redirect($user = false, $team = false){
 
         // Verifica se o customer pode ser remanejado
         if(!$this->canRedirect()) return false;
+
+        // Verifica se foi passada alguma informação
+        if($user == false and $team == false ){
+            // Define se é remarketing
+            $remarketing = ($this->n_customer_service >= 1);
+
+            // Fazer o remanejamento
+            $this->team_id = NULL;
+            $this->user_id = NULL;
+            $this->opened = 2;
+            $this->stage_id = 5;
+            $this->save();
+
+            // Adicionar no registro de timeline do cliente
+            $timeline_event = "O usuário #".Auth::user()->id." ".Auth::user()->name." designou para ".($remarketing?"remarketing com ":"")."o proximo usuário do sistema";
+            $timeline = new CustomerTimeline;
+            $timeline->newTimeline($this, $timeline_event, 5);
+
+            return true;
+        }
+
+        // Redireciona para outra quipe caso tenha sido solicitado
+        if($team) $this->redirectTeam($team);
+
+        // Verfica se dever forçar um redirecionamento de equipe também
+        if($team == false and $this->team_id != $user->team_id)
+            $this->redirectTeam($user->team);
 
         // Caso o atendimento ainda esteja aberto, finaliza ele para poder remanejar o customer
         $customerService = $this->customerService;
         if($customerService? $customerService->status == 1 : false)
             $customerService->end(3, 'Finalizado para remanejar');
 
+        // Daqui para baixo é apenas o redirecionamento para outro atendente
+        if( $user == false ) return true;
+
         // Define se é remarketing
         $remarketing = ($this->n_customer_service >= 1);
 
         // Fazer o remanejamento
-        $this->user_id = $user->user_id;
+        $this->user_id = $user->id;
         $this->opened = 2;
         $this->stage_id = 5;
         $this->save();
 
         // Adicionar no registro de timeline do cliente
-        $timeline_event = "O usuário #".Auth::user()->id." ".Auth::user()->name." designou para ".($remarketing?"remarketing com ":"")."o usuário ".$assistent->name.".";
+        $timeline_event = "O usuário #".Auth::user()->id." ".Auth::user()->name." designou para ".($remarketing?"remarketing com ":"")."o usuário #".$user->id." ".$user->name.".";
+        $timeline = new CustomerTimeline;
+        $timeline->newTimeline($this, $timeline_event, 5);
+
+        return true;
+    }
+
+    // Direciona o custmer para uma nova equipe
+    public function redirectTeam($team){
+
+        // Verifica se o customer pode ser remanejado
+        if(!$this->canRedirect()) return false;
+
+        // Define se é remarketing
+        $remarketing = ($this->n_customer_service >= 1);
+
+        // Fazer o remanejamento
+        $this->team_id = ($team?$team->id:NULL);
+        $this->user_id =  NULL;
+        $this->opened = 2;
+        $this->stage_id = 5;
+        $this->save();
+
+        // Adicionar no registro de timeline do cliente
+        $timeline_event = "O usuário #".Auth::user()->id." ".Auth::user()->name." designou para ".($remarketing?"remarketing com ":"")."a equipe #".($team?$team->id:NULL)." ".($team?$team->name:NULL).".";
         $timeline = new CustomerTimeline;
         $timeline->newTimeline($this, $timeline_event, 5);
 
@@ -195,7 +267,7 @@ class Customer extends Model
     public function canRedirect(){
 
         //Impede redirecionamento para clientes novos
-        if($this->n_customer_service == 0 ) return false;
+        //if($this->n_customer_service == 0 ) return false;
 
         // Verifica se o cliente já está vendido
         if($this->stage_id >= 6) return false;
@@ -220,7 +292,7 @@ class Customer extends Model
 
         // Se o Usuário for Master
         if(Auth::user()->hasRole('Master')) {
-            $customers = ViewBaseCustomer::where([['id','>','0']]);
+            $customers = ViewBaseCustomer::where([['id','>','0'], ['tenancy', '=', Auth::user()->tenancy_id]]);
 
         // Se o Usuário for Gerente
         } elseif(Auth::user()->hasRole('Gerente')) {

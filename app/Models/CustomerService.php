@@ -86,11 +86,12 @@ class CustomerService extends Model
     public function nextCustomer($remarketing = false)
     {
         // Caso tenha soliticato de remarketing
-        if($remarketing){
+        /*if($remarketing){
             $customer = Customer::where([
                     ['user_id',"=", Auth::user()->id],
                     ['opened', "=", 2],
-                    ['n_customer_service', ">=", 1]
+                    ['n_customer_service', ">=", 1],
+                    ['tenancy_id', "=", Auth::user()->tenancy_id]
                 ])->orderBy('updated_at', 'asc')
                 ->first();
 
@@ -98,35 +99,58 @@ class CustomerService extends Model
             $this->next_remarketing  = true;
 
             return $customer;
-        }
+        }*/
 
         // Caso não tenha solicitado de remarketing
+        $nextCustomer = Customer::where('tenancy_id', Auth::user()->tenancy_id);
+        $nextCustomer->where('opened', '2');
+        
 
-        // Obtem o proximo na lista pela equipe
-        $teamCustomer = Customer::where('team_id', Auth::user()->team_id)
+        
+        $nextCustomer->where(function($query){
+            // Obtem o proximo na lista pelo usuário
+            $query->where('user_id', Auth::user()->id);
+
+            // Obtem o proximo na lista pela equipe
+            $query->orWhere([['team_id', '=', Auth::user()->team_id],['user_id', '=', NULL]]);
+            $query->orWhere([['team_id', '=', Auth::user()->team_id],['user_id', '=', ""]]);
+
+            // Obtem o proximo na lista geral
+            $query->orWhere([['team_id', '=', NULL],['user_id', '=', NULL]]);
+            $query->orWhere([['team_id', '=', ""],['user_id', '=', ""]]);
+        });
+
+        if($remarketing){
+            $nextCustomer->where('n_customer_service', '>=', 1);
+        }else{
+            $nextCustomer->where('n_customer_service', '=', 0);
+        }
+        /*$teamCustomer = Customer::where('team_id', Auth::user()->team_id)
             ->where('user_id', NULL)
+            ->where('tenancy_id', Auth::user()->tenancy_id)
             ->orderBy('updated_at', 'desc')
-            ->first();
+            ->first();*/
 
         // Obtem o proximo na lista pelo usuário
-        $userCustomer = Customer::where('opened', '2')
+        /*$userCustomer = Customer::where('opened', '2')
             ->where('user_id', Auth::user()->id)
-            ->where('n_customer_service', 0)
-            ->orderBy('updated_at', 'desc')
-            ->first();
+            ->where('tenancy_id', Auth::user()->tenancy_id)
+            ->where('n_customer_service', 0)*/
+        $nextCustomer = $nextCustomer->orderBy('updated_at', 'desc')->first();
 
-        $customer = false;
+        /*$customer = false;
 
         // Define se o proximo será da lista de equipe ou da lista do usuário
         if($teamCustomer AND $userCustomer){
             $customer = (strtotime($teamCustomer->updated_at) > strtotime($userCustomer->updated_at))?$teamCustomer:$userCustomer;
         }else{
             $customer = $teamCustomer?$teamCustomer:$userCustomer;
-        }
+        }*/
         // Retorna
-        $this->nextCustomer         = $customer;
-        $this->next_remarketing     = false;
-        return $customer;
+        $this->nextCustomer         = $remarketing?false:$nextCustomer;
+        $this->next_remarketing     = $remarketing?$nextCustomer:false;
+
+        return $nextCustomer;
     }
 
     /* 

@@ -143,7 +143,7 @@
     }
 
     /* Place the containerx to the right */
-    .right {
+    .content-wrapper  .right {
     left: 50%;
     }
 
@@ -162,7 +162,7 @@
     }
 
     /* Add arrows to the right containerx (pointing left) */
-    .right::before {
+    .content-wrapper .right::before {
     content: " ";
     height: 0;
     position: absolute;

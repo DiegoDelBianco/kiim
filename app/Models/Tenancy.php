@@ -17,12 +17,28 @@ class Tenancy extends Model
         'logo',
         'max_users',
         'max_websites',
+        'max_customers',
         'user_id',
+        'doc',
+        'email',
+        'phone',
+        'cep',
+        'address',
+        'address_number',
+        'complement',
+        'province',
+        'city',
+        'uf',
+        'assas_id',
     ];
 
     /******         Relacionamentos do DB         ******/
 
     /*belongsToMany*/
+    public function sysProducts()
+    {
+        return $this->belongsToMany('App\Models\SysProduct', 'sys_product_tenancies');
+    }
 
     /*belongsTo*/
     public function user()
@@ -31,6 +47,10 @@ class Tenancy extends Model
     }
     
     /*hasMany*/
+    public function sysProductTenancy()
+    {
+        return $this->hasMany('App\Models\SysProductTenancy');
+    }
     public function customers()
     {
         return $this->hasMany('App\Models\Customer');

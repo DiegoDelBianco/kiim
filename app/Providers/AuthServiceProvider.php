@@ -68,5 +68,233 @@ class AuthServiceProvider extends ServiceProvider
         Gate::define('store-customer', function($user){
             return true;
         });
+        Gate::define('customer-redirect', function($user){
+
+
+            if(Auth::user()->hasRole('Master')) {
+                return true;
+
+            } elseif(Auth::user()->hasRole('Gerente')) {
+                return true;
+
+            } else {
+                return false;
+
+            }
+        });
+
+
+
+        // Define quais menus estão disponiveis
+        Gate::define('menu-h-sales', function($user){
+
+            if(Auth::user()->hasRole('Master')) {
+                return true;
+
+            } elseif(Auth::user()->hasRole('Gerente')) {
+                return true;
+
+            } else {
+                return true;
+
+            }
+        });
+        Gate::define('menu-customer-list', function($user){
+
+            if(Auth::user()->hasRole('Master')) {
+                return true;
+
+            } elseif(Auth::user()->hasRole('Gerente')) {
+                return true;
+
+            } else {
+                return true;
+
+            }
+        });
+        Gate::define('menu-customer-service', function($user){
+
+            if(Auth::user()->hasRole('Master')) {
+                return true;
+
+            } elseif(Auth::user()->hasRole('Gerente')) {
+                return true;
+
+            } else {
+                return true;
+
+            }
+        });
+        Gate::define('menu-customer-service-remarketing', function($user){
+
+            if(Auth::user()->hasRole('Master')) {
+                return true;
+
+            } elseif(Auth::user()->hasRole('Gerente')) {
+                return true;
+
+            } else {
+                return true;
+
+            }
+        });
+        Gate::define('menu-websites-list', function($user){
+
+            if(Auth::user()->hasRole('Master')) {
+                return true;
+
+            } elseif(Auth::user()->hasRole('Gerente')) {
+                return false;
+
+            } else {
+                return false;
+
+            }
+        });
+        Gate::define('menu-shedules', function($user){
+
+            if(Auth::user()->hasRole('Master')) {
+                return true;
+
+            } elseif(Auth::user()->hasRole('Gerente')) {
+                return true;
+
+            } else {
+                return true;
+
+            }
+        });
+        Gate::define('menu-sales', function($user){
+
+            if(Auth::user()->hasRole('Master')) {
+                return true;
+
+            } elseif(Auth::user()->hasRole('Gerente')) {
+                return false;
+
+            } else {
+                return false;
+
+            }
+        });
+        Gate::define('menu-h-business', function($user){
+
+            if(Auth::user()->hasRole('Master')) {
+                return true;
+
+            } elseif(Auth::user()->hasRole('Gerente')) {
+                return true;
+
+            } else {
+                return false;
+
+            }
+        });
+        Gate::define('menu-teams-list', function($user){
+
+            if(Auth::user()->hasRole('Master')) {
+                return true;
+
+            } elseif(Auth::user()->hasRole('Gerente')) {
+                return true;
+
+            } else {
+                return false;
+
+            }
+        });
+        Gate::define('menu-users-list', function($user){
+
+            if(Auth::user()->hasRole('Master')) {
+                return true;
+
+            } elseif(Auth::user()->hasRole('Gerente')) {
+                return true;
+
+            } else {
+                return false;
+
+            }
+        });
+        Gate::define('menu-products', function($user){
+
+            if(Auth::user()->hasRole('Master')) {
+                return true;
+
+            } elseif(Auth::user()->hasRole('Gerente')) {
+                return true;
+
+            } else {
+                return false;
+
+            }
+        });
+        Gate::define('menu-config', function($user){
+
+            if(Auth::user()->hasRole('Master')) {
+                return true;
+
+            } elseif(Auth::user()->hasRole('Gerente')) {
+                return false;
+
+            } else {
+                return false;
+
+            }
+        });
+        Gate::define('menu-h-administrative', function($user){
+
+            if(Auth::user()->hasRole('Master')) {
+                return true;
+
+            } elseif(Auth::user()->hasRole('Gerente')) {
+                return true;
+
+            } else {
+                return false;
+
+            }
+        });
+        Gate::define('menu-metrics', function($user){
+
+            if(Auth::user()->hasRole('Master')) {
+                return true;
+
+            } elseif(Auth::user()->hasRole('Gerente')) {
+                return true;
+
+            } else {
+                return true;
+
+            }
+        });
+        Gate::define('menu-h-account', function($user){
+
+            if(Auth::user()->hasRole('Master')) {
+                return true;
+
+            } elseif(Auth::user()->hasRole('Gerente')) {
+                return true;
+
+            } else {
+                return true;
+
+            }
+        });
+        Gate::define('menu-account', function($user){
+
+            if(Auth::user()->hasRole('Master')) {
+                return true;
+
+            } elseif(Auth::user()->hasRole('Gerente')) {
+                return true;
+
+            } else {
+                return true;
+
+            }
+        });
+
+
     }
 }

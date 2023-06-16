@@ -300,91 +300,112 @@ return [
             'type'         => 'fullscreen-widget',
             'topnav_right' => true,
         ],
-        [
-            'type'         => 'navbar-notification',
-            'id'           => 'my-notification',      // An ID attribute (required).
-            'icon'         => 'fas fa-bell',          // A font awesome icon (required).
-            //'icon_color'   => 'danger',              // The initial icon color (optional).
-            'label'        => 0,                      // The initial label for the badge (optional).
-            'label_color'  => 'danger',               // The initial badge color (optional).
-            'url'          => 'notifications/show',   // The url to access all notifications/elements (required).
-            'topnav_right' => true,                   // Or "topnav => true" to place on the left (required).
-            'dropdown_mode'   => true,                // Enables the dropdown mode (optional).
-            'dropdown_flabel' => 'All notifications', // The label for the dropdown footer link (optional).
-            'update_cfg'   => [
-                'url' => 'notifications/get',         // The url to periodically fetch new data (optional).
-                'period' => 30,                       // The update period for get new data (in seconds, optional).
-            ],
-        ],
+//        [
+//            'type'         => 'navbar-notification',
+//            'id'           => 'my-notification',      // An ID attribute (required).
+//            'icon'         => 'fas fa-bell',          // A font awesome icon (required).
+//            //'icon_color'   => 'danger',              // The initial icon color (optional).
+//            'label'        => 0,                      // The initial label for the badge (optional).
+//            'label_color'  => 'danger',               // The initial badge color (optional).
+//            'url'          => 'notifications/show',   // The url to access all notifications/elements (required).
+//            'topnav_right' => true,                   // Or "topnav => true" to place on the left (required).
+//            'dropdown_mode'   => true,                // Enables the dropdown mode (optional).
+//            'dropdown_flabel' => 'All notifications', // The label for the dropdown footer link (optional).
+//            'update_cfg'   => [
+//                'url' => 'notifications/get',         // The url to periodically fetch new data (optional).
+//                'period' => 30,                       // The update period for get new data (in seconds, optional).
+//            ],
+//        ],
         [
             'text' => 'Painel',
             'route'  => 'dashboard',
             'icon' => 'fas fa-fw fa-home',
         ],
-        ['header' => 'VENDAS'],
+        ['header' => 'VENDAS', 'can'  => ['menu-h-sales']],
         [
-            'text' => 'Leads Vendidos',
-            'route'  => 'customers.sales',
-            'icon' => 'fas fa-fw fa-funnel-dollar',
-        ],
-        [
+            'id' => 'left-menu-customers',
             'text' => 'Leads',
             'route'  => 'customers',
             'icon' => 'fas fa-fw fa-address-book',
+            'can'  => ['menu-customer-list'],
+            'label'       => 0,
+            'label_color' => 'info',
         ],
         [
+            'id' => 'left-menu-customer-services',
             'text' => 'Atendimento',
             'route'  => 'customers.customer-services',
             'icon' => 'fas fa-fw fa-headphones',
+            'can'  => ['menu-customer-service'],
+            'label'       => 0,
+            'label_color' => 'info',
         ],
         [
+            'id' => 'left-menu-customer-services-remarketing',
             'text' => 'Leads Retorno',
             'route'  => 'customers.customer-services.remarketing',
             'icon' => 'fas fa-fw fa-recycle',
+            'can'  => ['menu-customer-service-remarketing'],
+            'label'       => 0,
+            'label_color' => 'info',
         ],
         [
             'text' => 'LeadPages',
             'route'  => 'websites',
             'icon' => 'fas fa-fw fa-globe',
+            'can'  => ['menu-websites-list'],
         ],
         [
             'text' => 'Agenda (Em Breve)',
             'url'  => '#',
             'icon' => 'fas fa-fw fa-calendar-alt',
+            'can'  => ['menu-shedules'],
         ],
-        ['header' => 'ORGANIZACIONAL'],
+        [
+            'text' => 'Leads Vendidos',
+            'route'  => 'customers.sales',
+            'icon' => 'fas fa-fw fa-funnel-dollar',
+            'can'  => ['menu-sales'],
+        ],
+        ['header' => 'ORGANIZACIONAL', 'can'  => ['menu-h-business']],
         [
             'text' => 'Equipes',
             'url'  => 'teams',
             'icon' => 'fas fa-fw fa-users-cog',
+            'can'  => ['menu-teams-list'],
         ],
         [
             'text' => 'Usuários',
             'route'  => 'users',
             'icon' => 'fas fa-fw fa-user',
+            'can'  => ['menu-users-list'],
         ],
         [
             'text' => 'Imóveis',
             'route'  => 'products',
             'icon' => 'fas fa-fw fa-warehouse',
+            'can'  => ['menu-products'],
         ],
         [
-            'text' => 'Configurações (Em Breve)',
-            'url'  => '#',
+            'text' => 'Configurações',
+            'route'  => 'tenancies',
             'icon' => 'fas fa-fw fa-cogs',
+            'can'  => ['menu-config'],
         ],
-        ['header' => 'ADMINISTRATIVO'],
+        ['header' => 'ADMINISTRATIVO', 'can'  => ['menu-h-administrative']],
         [
-            'text' => 'Métricas (Em Breve)',
+            'text' => 'Métricas',
             'route' => 'dashboard',
-            'url'  => '#',
+            'route'  => 'metrics',
             'icon' => 'fas fa-fw fa-chart-bar',
+            'can'  => ['menu-metrics'],
         ],
-        ['header' => 'MINHA CONTA'],
+        ['header' => 'MINHA CONTA', 'can'  => ['menu-h-account']],
         [
             'text' => 'Editar meus dados',
             'route' => 'profile.edit',
             'icon' => 'fas fa-fw fa-user-circle',
+            'can'  => ['menu-account'],
         ],
 /*
         // Sidebar items:
@@ -574,6 +595,21 @@ return [
                     'type' => 'js',
                     'asset' => false,
                     'location' => '//cdnjs.cloudflare.com/ajax/libs/pace/1.0.2/pace.min.js',
+                ],
+            ],
+        ],
+        'app' => [
+            'active' => true,
+            'files' => [
+                //[
+                //    'type' => 'css',
+                //    'asset' => true,
+                //    'location' => '/css/style.css',
+                //],
+                [
+                    'type' => 'js',
+                    'asset' => true,
+                    'location' => '/js/dashboard/app.js',
                 ],
             ],
         ],
