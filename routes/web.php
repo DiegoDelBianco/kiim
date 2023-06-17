@@ -15,6 +15,7 @@ use App\Http\Controllers\SysProductController;
 use App\Http\Controllers\SysProductTenancyController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\MetricsController;
+use App\Http\Controllers\WhatsappNotificationController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -31,6 +32,32 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     //return redirect()->route('login');
     return view('public');
+});
+
+Route::get('/wpp-test', function () {
+    //return redirect()->route('login');
+
+
+        $ch = curl_init();
+
+        curl_setopt($ch, CURLOPT_URL, "https://graph.facebook.com/v17.0/116377101484860/messages");
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+        curl_setopt($ch, CURLOPT_HEADER, FALSE);
+
+        curl_setopt($ch, CURLOPT_POST, TRUE);
+
+        curl_setopt($ch, CURLOPT_POSTFIELDS, "{ \"messaging_product\": \"whatsapp\", \"to\": \"5511956695325\", \"type\": \"template\", \"template\": { \"name\": \"inicio\", \"language\": { \"code\": \"pt_BR\" } } }");
+
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+            'Content-Type: application/json',
+            "Authorization: Bearer EAAJvbmt10I8BAMRulXQVE7K3vDzcG8WcR5ZC4PILVgOJt4xGCbEjAQjv82LppRKaPBTrIQgVYZACOuZB5JvDbDbnRBlUv0dndmVKfrjlWMEc7m2ZBF7SMhjZCvt5dU4XWG0xhrANexcIRl3lkagZCqAEQRyXMZAKw14CZAakYqQZAWy0OwqRkNoJaJVQh9dqb4P9QvrBxUhc0AgZDZD' ",
+        ));
+
+        $response = curl_exec($ch);
+        curl_close($ch);
+
+        print_r($response);
+    return null;
 });
 
 
@@ -115,5 +142,10 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::get('/pub/leadpage/{website}', [WebsiteController::class, 'show'])->name('public.websites');
+// Whatsapp WebHook
+Route::get('/webhook/wpp-notification', [WhatsappNotificationController::class, 'webhookGet'])->name('api.webhook.wpp.get');
+Route::post('/webhook/wpp-notification', [WhatsappNotificationController::class, 'webhookPost'])->name('api.webhook.wpp.get');
+
+
 
 require __DIR__.'/auth.php';

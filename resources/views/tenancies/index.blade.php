@@ -286,7 +286,7 @@
 
         // mask phone
         $(document).ready(function(){
-            $('#input-phone').mask('(00) 0000-0000');
+            $('#input-phone').mask('(00) 0 0000-0000');
         });
 
 
