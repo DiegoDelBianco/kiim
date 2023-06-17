@@ -11,7 +11,7 @@
         <p>A kiim é um CRM imobiliario, nos comprometemos a não repassar ou vender informações de cliente para terceiros sem a aprovação deles.</p>
         <p>Podemos contar com Integrações de terceiros, mas sempre sob solicitação dos nossos clientes</p>
         <p>Os dados do cliente final no CRM são de responsabilidade dos usuários que os cadastraram</p>
-        <p>Este é um produto da Agência Jobs</p>
+        <p>Este é um produto da Agência</p>
     </center>
 </body>
 </html>

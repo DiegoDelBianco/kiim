@@ -23,8 +23,8 @@ class WhatsappNotificationController extends Controller
         return NULL;
     }
     public function webhookPost(Request $request){
-
-        $log =  PHP_EOL . PHP_EOL . '[' . date('Y-m-d H:i:s') . '] - POST '. print_r($request->all(), true) . PHP_EOL;
+        $response = $request->all();
+        $log =  PHP_EOL . PHP_EOL . '[' . date('Y-m-d H:i:s') . '] - POST '. print_r($response['entry'][0]['changes'][0]['value']['messages'][0]['text']['body'], true) . PHP_EOL;
         File::append(
             storage_path('logs/wpp_webhook_api.log'),
             $log
