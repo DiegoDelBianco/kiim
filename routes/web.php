@@ -146,9 +146,7 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::get('/pub/leadpage/{website}', [WebsiteController::class, 'show'])->name('public.websites');
-// Whatsapp WebHook
-Route::get('/webhook/wpp-notification', [WhatsappNotificationController::class, 'webhookGet'])->name('api.webhook.wpp.get');
-Route::post('/webhook/wpp-notification', [WhatsappNotificationController::class, 'webhookPost'])->name('api.webhook.wpp.post');
+
 
 
 
