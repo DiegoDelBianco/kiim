@@ -4,7 +4,8 @@ return [
     'app_secrect' => '',
     //'token' => 'EAAJvbmt10I8BANd4Ei9dQxWliyh5XZAGs9VIB2SFbL4PaDauMBFo2Wgbll7uqXvhFzYKvQm3zPTeqOvukPw8ZA4xNj7DZCpkO0xyBhBaNy2FopxKqaEv9sEiNXfO6CPhHWHyFQZBNF79lF35fpnxzZCJsiX3tbroJLSbY9dVf0rcSuZBD9BZBZAxO0o6gdeGDpODR4g5YG8vkQZDZD',
     'token' => 'EAAJvbmt10I8BAMRulXQVE7K3vDzcG8WcR5ZC4PILVgOJt4xGCbEjAQjv82LppRKaPBTrIQgVYZACOuZB5JvDbDbnRBlUv0dndmVKfrjlWMEc7m2ZBF7SMhjZCvt5dU4XWG0xhrANexcIRl3lkagZCqAEQRyXMZAKw14CZAakYqQZAWy0OwqRkNoJaJVQh9dqb4P9QvrBxUhc0AgZDZD',
-    'app_config' => '990543668784366'
+    'app_config' => '990543668784366',
+    'webhook_token' => 'sdfJUE57*+-aaa'
 ];
 
 
