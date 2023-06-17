@@ -50,7 +50,7 @@ Route::get('/wpp-test', function () {
 
         curl_setopt($ch, CURLOPT_POST, TRUE);
 
-        curl_setopt($ch, CURLOPT_POSTFIELDS, "{ \"messaging_product\": \"whatsapp\", \"to\": \"5511956695325\", \"type\": \"template\", \"template\": { \"name\": \"inicio\", \"language\": { \"code\": \"pt_BR\" } } }");
+        curl_setopt($ch, CURLOPT_POSTFIELDS, "{ \"messaging_product\": \"whatsapp\", \"to\": \"5511956695325\", \"type\": \"template\", \"template\": { \"name\": \"hello_world\", \"language\": { \"code\": \"en_US\" } } }");
 
         curl_setopt($ch, CURLOPT_HTTPHEADER, array(
             'Content-Type: application/json',
@@ -148,7 +148,7 @@ Route::middleware('auth')->group(function () {
 Route::get('/pub/leadpage/{website}', [WebsiteController::class, 'show'])->name('public.websites');
 // Whatsapp WebHook
 Route::get('/webhook/wpp-notification', [WhatsappNotificationController::class, 'webhookGet'])->name('api.webhook.wpp.get');
-Route::post('/webhook/wpp-notification', [WhatsappNotificationController::class, 'webhookPost'])->name('api.webhook.wpp.get');
+Route::post('/webhook/wpp-notification', [WhatsappNotificationController::class, 'webhookPost'])->name('api.webhook.wpp.post');
 
 
 
