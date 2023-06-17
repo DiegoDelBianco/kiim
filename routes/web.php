@@ -33,6 +33,10 @@ Route::get('/', function () {
     //return redirect()->route('login');
     return view('public');
 });
+Route::get('/politica-de-privacidade', function () {
+    //return redirect()->route('login');
+    return view('public.politica-de-privacidade');
+});
 
 Route::get('/wpp-test', function () {
     //return redirect()->route('login');
