@@ -33,12 +33,33 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
-        Gate::define('manage-users', function($user){
-            return $user->hasAnyRoles(['Master', 'Gerente']);
+        Gate::define('manage-users', function($user, $tenancy_id = Null){
+            if($tenancy_id == NULL)
+                $tenancy_id = Auth::user()->tenancy_id;
+
+            return $user->hasAnyRoles(['admin', 'manager', 'team_manager'], $tenancy_id);
+        });
+
+        Gate::define('manage-teams', function($user, $tenancy_id = Null){
+            if($tenancy_id == NULL)
+                $tenancy_id = Auth::user()->tenancy_id;
+
+            return $user->hasAnyRoles(['admin', 'manager', 'team_manager'], $tenancy_id);
+        });
+
+        Gate::define('manage-products', function($user, $tenancy_id = Null){
+            if($tenancy_id == NULL)
+                $tenancy_id = Auth::user()->tenancy_id;
+
+            return $user->hasAnyRoles(['admin', 'manager', 'team_manager'], $tenancy_id);
+        });
+
+        Gate::define('manage-any-users', function($user, $tenancy_id){
+            return $user->hasAnyRoles(['admin', 'manager', 'team_manager'], $tenancy_id);
         });
 
         Gate::define('edit-users', function($user){
-            return $user->hasAnyRoles(['admin', 'author']);
+            return $user->hasAnyRoles(['admin', 'manager', 'team_manager']);
         });
 
         Gate::define('delete-users', function($user){

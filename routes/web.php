@@ -17,6 +17,7 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\MetricsController;
 use App\Http\Controllers\WhatsappNotificationController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CustomerCsvImportController;
 
 /*
 |--------------------------------------------------------------------------
@@ -42,7 +43,7 @@ Route::get('/wpp-test', function () {
         curl_setopt($ch, CURLOPT_URL, "https://graph.facebook.com/v17.0/116377101484860/messages");
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
         curl_setopt($ch, CURLOPT_HEADER, FALSE);
-        
+
         curl_setopt($ch, CURLOPT_POST, TRUE);
 
         //curl_setopt($ch, CURLOPT_POSTFIELDS, "{ \"messaging_product\": \"whatsapp\", \"to\": \"5511981825304\", \"type\": \"template\", \"template\": { \"name\": \"inicio\", \"language\": { \"code\": \"pt_BR\" } } }");
@@ -52,7 +53,7 @@ Route::get('/wpp-test', function () {
             'Content-Type: application/json',
             "Authorization: Bearer EAAJvbmt10I8BAPcpjsHxM7kz5MwUx6AbCZCSWMdL0Vi9W58zkOCrFojX0eWtEQzQWSXyQlusT2R6cfEi1Mk2xjpZBZAZCcblfJE3eQROfyOdSgBZBW0ezoESJpNeSdGv4HMqUJm2gEolyZCknga8VqZCK7RkwWLY3eWMc4fpFFEIHsmJlAn0STCJMHq0Fo4bbyOPv5UydnW4QZDZD' ",
         ));
-        
+
         $response = curl_exec($ch);
         curl_close($ch);
 
@@ -79,8 +80,10 @@ Route::middleware('auth')->group(function () {
     // Usuários
     Route::get('/users', [UserController::class, 'index'])->name('users');
     Route::post('/users', [UserController::class, 'store'])->name('users.store');
-    Route::get('/users/edit/{user}', [UserController::class, 'edit'])->name('users.edit');
-    Route::patch('/users/edit/{user}', [UserController::class, 'update'])->name('users.update');
+    Route::post('/users/link', [UserController::class, 'link'])->name('users.link');
+    Route::post('/users/unlink/{tenancy}/{user}', [UserController::class, 'unlink'])->name('users.unlink');
+    Route::get('/users/edit/{tenancy}/{user}', [UserController::class, 'edit'])->name('users.edit');
+    Route::patch('/users/edit/{tenancy}/{user}', [UserController::class, 'update'])->name('users.update');
     Route::post('/users/edit-pass/{user}', [UserController::class, 'updatePassword'])->name('users.update.password');
     Route::get('/users/list/ajax/by-team', [UserController::class, 'listByTeam'])->name('users.list.ajax.by-team');
 
@@ -94,7 +97,13 @@ Route::middleware('auth')->group(function () {
     Route::post('/customers/{customer}/timeline/', [CustomerTimelineController::class, 'store'])->name('customers.timelines.store');
     Route::get('/customers/sales', [CustomerController::class, 'listSales'])->name('customers.sales');
     Route::post('/customers/redirect/{customer}', [CustomerController::class, 'redirect'])->name('customers.redirect');
-    
+
+    // CSV import to leads
+    Route::get('/users/csv-import', [CustomerCsvImportController::class, 'index'])->name('customers.importCsv');
+    Route::post('/users/csv-import', [CustomerCsvImportController::class, 'store'])->name('customers.importCsv.store');
+    Route::get('/users/csv-import/select-head/{customerCsvImport}', [CustomerCsvImportController::class, 'selectHead'])->name('customers.importCsv.selectHead');
+    Route::post('/users/csv-import/finalize/{customerCsvImport}', [CustomerCsvImportController::class, 'finalize'])->name('customers.importCsv.finalize');
+
     // Atendimentos
     Route::get('/customers/customer-service/', [CustomerServiceController::class, 'index'])->name('customers.customer-services');
     Route::get('/customers/customer-service/remarketing', [CustomerServiceController::class, 'indexRemarketing'])->name('customers.customer-services.remarketing');
@@ -102,13 +111,18 @@ Route::middleware('auth')->group(function () {
     Route::delete('/customers/customer-service/{customer_service}', [CustomerServiceController::class, 'destroy'])->name('customers.customer-services.destroy');
 
     // Agendamentos
-    Route::post('/schedules/{customer_service}', [ScheduleController::class, 'store'])->name('schedules.store');
+    Route::get('/schedules', [ScheduleController::class, 'index'])->name('schedules');
+    Route::post('/schedules', [ScheduleController::class, 'store'])->name('schedules.store');
+    Route::post('/schedules/{customer_service}', [storeCustomerService::class, 'store'])->name('schedules.store.customer-service');
     Route::patch('/schedules/{schedule}', [ScheduleController::class, 'edit'])->name('schedules.edit');
+    Route::post('/schedules/up-done/{schedule}', [ScheduleController::class, 'editDone'])->name('schedules.update.done');
+    Route::post('/schedules/up-cancel/{schedule}', [ScheduleController::class, 'editCancel'])->name('schedules.update.cancel');
 
     // Equipes
     Route::get('/teams', [TeamController::class, 'index'])->name('teams');
     Route::post('/teams', [TeamController::class, 'store'])->name('teams.store');
     Route::patch('/teams/{team}', [TeamController::class, 'update'])->name('teams.update');
+    Route::delete('/teams/{team}', [TeamController::class, 'destroy'])->name('teams.destroy');
 
     // Imóveis
     Route::get('/products', [ProductController::class, 'index'])->name('products');
@@ -137,7 +151,7 @@ Route::middleware('auth')->group(function () {
 
     // Métricas
     Route::get('/metrics', [MetricsController::class, 'index'])->name('metrics');
-    Route::get('/metrics/team/{team', [MetricsController::class, 'index'])->name('metrics.team');
+    Route::get('/metrics/team/{team}', [MetricsController::class, 'index'])->name('metrics.team');
 
 });
 

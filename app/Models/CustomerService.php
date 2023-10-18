@@ -61,9 +61,9 @@ class CustomerService extends Model
         return $this->status_name[$id];
     }
 
-    /* 
+    /*
      * Retorna o cliente de que está sendo atendido no momento pelo usuário passado
-     * 
+     *
      * $user_id recebe o id o usuário, caso false, pega do usuário logado
      * $remarketing define se vai puxar de remarketing ou não remarketing, mentenha com 2 caso queria puxar o primeiro independete de remarkeitng
      */
@@ -85,75 +85,24 @@ class CustomerService extends Model
     // O proximo cliente para atendimento
     public function nextCustomer($remarketing = false)
     {
-        // Caso tenha soliticato de remarketing
-        /*if($remarketing){
-            $customer = Customer::where([
-                    ['user_id',"=", Auth::user()->id],
-                    ['opened', "=", 2],
-                    ['n_customer_service', ">=", 1],
-                    ['tenancy_id', "=", Auth::user()->tenancy_id]
-                ])->orderBy('updated_at', 'asc')
-                ->first();
 
-            $this->nextCustomer      = $customer;
-            $this->next_remarketing  = true;
-
-            return $customer;
-        }*/
-
-        // Caso não tenha solicitado de remarketing
-        $nextCustomer = Customer::where('tenancy_id', Auth::user()->tenancy_id);
-        $nextCustomer->where('opened', '2');
-        
-
-        
-        $nextCustomer->where(function($query){
-            // Obtem o proximo na lista pelo usuário
-            $query->where('user_id', Auth::user()->id);
-
-            // Obtem o proximo na lista pela equipe
-            $query->orWhere([['team_id', '=', Auth::user()->team_id],['user_id', '=', NULL]]);
-            $query->orWhere([['team_id', '=', Auth::user()->team_id],['user_id', '=', ""]]);
-
-            // Obtem o proximo na lista geral
-            $query->orWhere([['team_id', '=', NULL],['user_id', '=', NULL]]);
-            $query->orWhere([['team_id', '=', ""],['user_id', '=', ""]]);
-        });
+        $nextCustomer = Customer::baseQueryUserQueue(); //Customer::where('tenancy_id', Auth::user()->tenancy_id);
 
         if($remarketing){
             $nextCustomer->where('n_customer_service', '>=', 1);
         }else{
             $nextCustomer->where('n_customer_service', '=', 0);
         }
-        /*$teamCustomer = Customer::where('team_id', Auth::user()->team_id)
-            ->where('user_id', NULL)
-            ->where('tenancy_id', Auth::user()->tenancy_id)
-            ->orderBy('updated_at', 'desc')
-            ->first();*/
 
-        // Obtem o proximo na lista pelo usuário
-        /*$userCustomer = Customer::where('opened', '2')
-            ->where('user_id', Auth::user()->id)
-            ->where('tenancy_id', Auth::user()->tenancy_id)
-            ->where('n_customer_service', 0)*/
         $nextCustomer = $nextCustomer->orderBy('updated_at', 'desc')->first();
 
-        /*$customer = false;
-
-        // Define se o proximo será da lista de equipe ou da lista do usuário
-        if($teamCustomer AND $userCustomer){
-            $customer = (strtotime($teamCustomer->updated_at) > strtotime($userCustomer->updated_at))?$teamCustomer:$userCustomer;
-        }else{
-            $customer = $teamCustomer?$teamCustomer:$userCustomer;
-        }*/
-        // Retorna
         $this->nextCustomer         = $remarketing?false:$nextCustomer;
         $this->next_remarketing     = $remarketing?$nextCustomer:false;
 
         return $nextCustomer;
     }
 
-    /* 
+    /*
      * Inicia o atendimento, está função deve ser chama após a "nextLead"
      *
      * $negociation define se vai inicar em modo de negociação
@@ -211,7 +160,7 @@ class CustomerService extends Model
                 $stage = 7;
                 break;
             case 3:
-                // Motivo: Outros -> Remarketing 
+                // Motivo: Outros -> Remarketing
                 $stage = 4;
                 //Cancela todos os agendamentos pendentes
                 Schedule::where([['customer_service_id','=', $this->id],['status','=','1']])
@@ -238,7 +187,7 @@ class CustomerService extends Model
                     ->update(['status' => '3']);
                 break;
             default:
-                // Motivo: Outros -> Remarketing 
+                // Motivo: Outros -> Remarketing
                 $stage = 4;
                 //Cancela todos os agendamentos pendentes
                 Scheduling::where([['customer_service_id','=', $this->id],['status','=','1']])
@@ -254,7 +203,7 @@ class CustomerService extends Model
 
     /*
      * Retona a contade de leads na fila de remarketing para notificações
-     * 
+     *
      * $user define o usuário, caso 0 usa o usuário logado
      * $limit define qual o limite do contador, ex $limite = 10, caso tenha 15 notificações irá retornar '10+'
      *
@@ -283,28 +232,28 @@ class CustomerService extends Model
      */
     public function countScheduling($status = 0)
     {
-        if($status == 0) 
+        if($status == 0)
             return count($this->schedules);
 
-        if($status == 1) 
+        if($status == 1)
             return Schedule::where('status', 1)
                 ->where('customer_service_id', $this->id)
                 ->where('date','>',date('Y-m-d'))->count();
 
-        if($status == 2) 
+        if($status == 2)
             return Schedule::where('status', 2)
                 ->where('customer_service_id', $this->id)->count();
 
-        if($status == 3) 
+        if($status == 3)
             return Schedule::where('status', 3)
                 ->where('customer_service_id', $this->id)->count();
 
-        if($status == 4) 
+        if($status == 4)
             return Schedule::where('status', 1)
                 ->where('customer_service_id', $this->id)
                 ->where('date','=',date('Y-m-d'))->count();
 
-        if($status == 5) 
+        if($status == 5)
             return Schedule::where('status', 1)
                 ->where('customer_service_id', $this->id)
                 ->where('date','<',date('Y-m-d'))->count();

@@ -20,7 +20,7 @@
 
             <div class="pt-2 pe-2">
                 <a href="{{route('products.create')}}" class="btn btn-primary" >
-                    <i class="fas fa-plus"></i> 
+                    <i class="fas fa-plus"></i>
                     <span>Novo Imóvel</span>
                 </a>
             </div>
@@ -45,6 +45,7 @@
                         <tr>
                             <th scope="col"></th>
                             <th scope="col">Titulo</th>
+                            <th scope="col">Empresa</th>
                             <th scope="col">Endereço</th>
                             <th scope="col" style="width: 190px;"></th>
                         </tr>
@@ -54,6 +55,7 @@
                             <tr>
                                 <td> </td>
                                 <td>{{ $product->title }}</td>
+                                <th>{{ $product->tenancy->name  }}</th>
                                 <th>{{ $product->address  }}</th>
                                 <td style="width:210px">
                                     <button data-toggle="modal" data-target="#modal-list-leadpages-{{ $product->id }}" class="btn btn-success">Leadpages</button>

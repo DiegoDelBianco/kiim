@@ -34,9 +34,20 @@
         @endif
 
             <div class="card-body">
-                
+
                 <form id="addUserForm" method="POST" action="{{route('products.store')}}">
                     @csrf
+                    <div class="form-group row">
+                        <label for="tenancyTeamForm"  class="col-md-4 col-form-label text-md-right">{{ __('Para: ') }}</label>
+                        <div class="col-md-6">
+                            <select class="form-control" required name="tenancy_id" id="tenancyTeamForm">
+                                <option value="">Selecione</option>
+                                @foreach($tenancies  as $tenancy)
+                                    <option value="{{$tenancy->id}}">{{$tenancy->name}}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
                     <div class="form-group row">
                         <label for="title" class="col-md-4 col-form-label text-md-right">{{ __('Titulo') }}</label>
                         <div class="col-md-6">

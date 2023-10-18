@@ -25,72 +25,45 @@
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         @endif
+        @if(session()->has('error'))
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                {{ session()->get('error') }}
+            </div>
+        @endif
         <div class="card-body h-100">
-            <form action="{{ route('users.update', $user) }}" method="POST">
+            <h2 class="mb-4">Editar {{$user->name }} <br /><small>Para: {{$tenancy->name}}</small></h2>
+
+            <form action="{{ route('users.update', [$tenancy, $user]) }}" method="POST">
                 @csrf
                 {{ method_field('PATCH') }}
+
                 <div class="form-group row">
-                    <label for="email" class="col-md-2 col-form-label text-md-right">Email</label>
+                    <label for="roles" class="col-md-2 col-form-label text-md-right">Privilégio</label>
                     <div class="col-md-6">
-                        <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ $user->email }}" required autocomplete="email" autofocus>
-                        @error('email')
-                            <span class="invalid-feedback" role="alert">
-                                <strong>{{ $message }}</strong>
-                            </span>
-                        @enderror
-                    </div>
-                </div>
-                <div class="form-group row mt-3">
-                    <label for="name" class="col-md-2 col-form-label text-md-right">Nome</label>
-                    <div class="col-md-6">
-                        <input id="name" type="text" class="form-control @error('name') is-invalid @enderror" name="name" value="{{ $user->name }}" required autofocus>
-                        @error('name')
-                            <span class="invalid-feedback" role="alert">
-                                <strong>{{ $message }}</strong>
-                            </span>
-                        @enderror
-                    </div>
-                </div>
-                @if(Auth::user()->hasRole('Master'))
-                    <hr>
-                    <div class="form-group row">
-                        <label for="roles" class="col-md-2 col-form-label text-md-right">Privilégio</label>
-                        <div class="col-md-6">
-                            @foreach($roles as $role)
-                                <div class="form-check">
-                                    <input type="radio" name="roles[]" value="{{ $role->id }}" id="role{{ $role->id }}"
-                                    @if($user->roles->pluck('id')->contains($role->id)) checked @endif>
-                                    <label for="role{{ $role->id }}">{{ $role->name }}</label>
-                                </div>
-                            @endforeach
-                        </div>
-                    </div>
-                @else
-                    <div class="col-md-6 d-none">
-                        @foreach($roles as $role)
+                        @foreach($roles as $name_role => $role)
                             <div class="form-check">
-                                <input type="radio" name="roles[]" value="{{ $role->id }}" id="role{{ $role->id }}"
-                                @if($user->roles->pluck('id')->contains($role->id)) checked @endif>
-                                <label for="role{{ $role->id }}">{{ $role->name }}</label>
+                                <input type="radio" name="roles[]" value="{{ $name_role }}" id="role{{ $name_role }}"
+                                @if($user->hasRole($name_role, $tenancy->id)) checked @endif>
+                                <label for="role{{ $name_role }}">{{ $role['name'] }} - {{ $role['description'] }}</label>
                             </div>
                         @endforeach
                     </div>
-                @endif
+                </div>
 
 
-                @if(Auth::user()->hasRole('Master'))
+                @if(Auth::user()->hasAnyRoles(['admin', 'manager'], $tenancy->id))
                     <div class="form-group row mt-3">
                         <label for="email" class="col-md-2 col-form-label text-md-right">Equipe</label>
                         <div class="col-md-6">
                             <select name="equipeEditUser" id="equipeEditUser" class="form-control">
                                 <option value="">Sem equipe</option>
                                 @foreach($teams  as $team)
-                                    <option value="{{$team->id}}" @if($user->team_id == $team->id) selected @endif>{{$team->name}}</option>
+                                    <option value="{{$team->id}}" @if($user->teamId() == $team->id) selected @endif>{{$team->name}}</option>
                                 @endforeach
                             </select>
                         </div>
                     </div>
-                @elseif(Auth::user()->hasRole('Gerente'))
+                @elseif(Auth::user()->hasRole('team_manager', $tenancy->id))
                     <input type="hidden" name="equipeEditUser" value="{{ Auth::user()->team_id }}">
                 @endif
                 <div class="modal-footer mb-4">
@@ -98,8 +71,7 @@
                     <button type="submit" class="btn btn-success">Salvar</button>
                 </div>
             </form>
-            <hr>
-            <h5>Mudar Senha</h5>
+            {{--<h5>Mudar Senha</h5>
             <div class="form-group">
                 <form id="changePasswordForm" method="POST" action="{{route('users.update.password', $user)}}">
                     @csrf
@@ -132,7 +104,7 @@
                         </div>
                     </div>
                 </form>
-            </div>
+            </div>--}}
         </div>
     </div>
 

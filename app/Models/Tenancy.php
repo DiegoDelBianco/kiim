@@ -5,11 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Auth\Events\Registered;
 
 class Tenancy extends Model
 {
     use HasFactory, SoftDeletes;
-    
+
     protected $fillable = [
         'subdomain',
         'name',
@@ -32,6 +34,53 @@ class Tenancy extends Model
         'assas_id',
     ];
 
+    public static function newTenancyWithUser($business_name, $name, $email, $password)
+    {
+
+        $tenancy = Tenancy::create([
+            'name' => $business_name,
+        ]);
+
+        // create roles
+        /*$role_master = Role::create([
+            'name' => 'Master',
+            'description' => 'Administrador',
+            'tenancy_id' => $tenancy->id,
+        ]);
+        $role_gerente = Role::create([
+            'name' => 'Gerente',
+            'description' => 'Gerente de Equipe',
+            'tenancy_id' => $tenancy->id,
+        ]);
+        $role_basico = Role::create([
+            'name' => 'Básico',
+            'description' => 'Acesso básico para atendimento',
+            'tenancy_id' => $tenancy->id,
+        ]);*/
+
+        $user = User::create([
+            'name' => $name,
+            'email' => $email,
+            'password' => Hash::make($password),
+            'tenancy_id' => $tenancy->id,
+        ]);
+
+        $tenancy->user_id = $user->id;
+        $tenancy->save();
+
+        // assign roles to user
+        RoleUser::create([
+            'user_id' => $user->id,
+            'name' => 'admin',
+            'tenancy_id' => $tenancy->id,
+        ]);
+
+
+        event(new Registered($user));
+
+        return $user;
+    }
+
     /******         Relacionamentos do DB         ******/
 
     /*belongsToMany*/
@@ -39,13 +88,18 @@ class Tenancy extends Model
     {
         return $this->belongsToMany('App\Models\SysProduct', 'sys_product_tenancies');
     }
+    public function users()
+    {
+        return $this->belongsToMany('App\Models\User', 'role_user');
+        // return $this->hasMany('App\Models\User');
+    }
 
     /*belongsTo*/
     public function user()
     {
         return $this->belongsTo('App\Models\User');
     }
-    
+
     /*hasMany*/
     public function sysProductTenancy()
     {
@@ -94,10 +148,6 @@ class Tenancy extends Model
     public function teams()
     {
         return $this->hasMany('App\Models\Team');
-    }
-    public function users()
-    {
-        return $this->hasMany('App\Models\User');
     }
     public function websites()
     {

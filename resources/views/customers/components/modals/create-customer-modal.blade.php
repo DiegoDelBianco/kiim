@@ -12,13 +12,25 @@
                     <form id="addClienteForm" action="{{route('customers.store')}}" method="POST">
                         @csrf
 
+                        <div class="form-group row">
+                            <label for="tenancyTeamForm"  class="col-md-4 col-form-label text-md-right">{{ __('Para: ') }}</label>
+                            <div class="col-md-6">
+                                <select class="form-control" required name="tenancy_id" id="tenancyTeamForm">
+                                    <option value="">Selecione</option>
+                                    @foreach($tenancies  as $tenancy)
+                                        <option value="{{$tenancy->id}}">{{$tenancy->name}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+
                         <div class="mb-3">
                             <label for="equipeAddClienteForm" class="form-label">Equipe</label>
                             <select class="form-control" id="equipeAddClienteForm" name="team_id">
                                 <option value="" selected disable>Na fila</option>
-                                @foreach ($listTeams as $key => $value)
+                                {{--@foreach ($listTeams as $key => $value)
                                     <option value="{{ $value->id }}" @if($value->id == Auth::user()->team_id) selected @endif >{{ $value->name }}</option>
-                                @endforeach
+                                @endforeach--}}
                             </select>
                         </div>
 
@@ -26,9 +38,9 @@
                             <label for="equipeAddUserForm" class="form-label">Usuário</label>
                             <select class="form-control" id="equipeAddUserForm" name="user_id">
                                 <option value="" selected disable>Na fila</option>
-                                @foreach ($listUsers as $user)
+                                {{--@foreach ($listUsers as $user)
                                     <option value="{{ $user->id }}" @if($user->id == Auth::user()->id) selected @endif >{{ $user->name }}</option>
-                                @endforeach
+                                @endforeach--}}
                             </select>
                         </div>
 

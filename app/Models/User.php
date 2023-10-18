@@ -50,36 +50,62 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
-    
+
     protected $roles_user = NULL;
 
 
     // Verifica se o usuário tem uma das permissões listadas em uma array
-    public function hasAnyRoles(array $roles)
+    public function hasAnyRoles(array $roles, $tenancy_id = Null)
     {
-        $role = $this->roles()->whereIn('name', $roles)->first();
+        /*$role = $this->roles()->whereIn('name', $roles)->first();
 
         if($role)
-            return true;
+            return true;*/
 
-        return false;
+        // Se não for informado o tenancy_id, pega o tenancy_id do usuário logado
+        if($tenancy_id === NULL)
+            $tenancy_id = Auth::user()->tenancy_id;
+
+        if($this->roles_user === NULL)
+            $this->loadRoles();
+
+        if(!isset($this->roles_user[$tenancy_id]))
+            return false;
+
+        return in_array($this->roles_user[$tenancy_id], $roles);
     }
 
     // Verifica se o usuário tem uma permissão especifica
-    public function hasRole($role)
+    public function hasRole($role, $tenancy_id = Null)
     {
+        // Se não for informado o tenancy_id, pega o tenancy_id do usuário logado
+        if($tenancy_id === NULL)
+            $tenancy_id = Auth::user()->tenancy_id;
 
-        if($this->roles_user === NULL){
-            $this->roles_user = [];
-            foreach($this->roles as $value)
-                $this->roles_user[$value->name] = true;
-        }
+        // adaptação para verificar se o usuário tem permissão de acordo com o nome da permissão antiga
+        if($role == "Master") $role = "admin";
+        if($role == "Gerente") $role = "team_manager";
+        if($role == "Assistente") $role = "basic";
+        if($role == "Básico") $role = "basic";
 
-        return isset($this->roles_user[$role])?$this->roles_user[$role]:false;
+        // Carrega regras caso não tenha carregado ainda, isso evita que seja feito várias consultas no banco
+        if($this->roles_user === NULL)
+            $this->loadRoles();
+
+        if(!isset($this->roles_user[$tenancy_id]))
+            return false;
+
+        return ($this->roles_user[$tenancy_id] == $role);
+    }
+
+    public function loadRoles(){
+        $this->roles_user = [];
+        foreach($this->roles as $value)
+            $this->roles_user[$value->tenancy_id]= $value->name;
     }
 
     /* Retorna as notificações do usúarios, está função sempre retonará as informações do usúario logado.
-     * 
+     *
      * $limit define qual o limite do contador, ex $limite = 10, caso tenha 15 notificações irá retornar '10+'
      * $withText recebe um valor booleano para definir se a função deve retornar os textos das notificações junto
      *
@@ -95,8 +121,8 @@ class User extends Authenticatable
         $countTotals = $countRemarketing + $countSchedules;     // Soma tudo
 
         // Se adequa ao limite caso tenha sido definido
-        if($limit) $countTotals = $countTotals > $limit ? $limit."+":$countTotals; 
-        
+        if($limit) $countTotals = $countTotals > $limit ? $limit."+":$countTotals;
+
         // Caso não tenha sido solicitado o texto da notificação retorna apenas a contagem
         if(!$withText)
             return $countTotals;
@@ -122,12 +148,45 @@ class User extends Authenticatable
     }
 
     // Retorna o nome da equipe caso exista
-    public function teamName(){
-        return $this->team ? $this->team->name : "Não definido";
+    public function teamName($tenancy_id = NULL){
+        if($tenancy_id === NULL)
+            return $this->team ? $this->team->name : "Não definido";
+        $rel = $this->roles()->where('tenancy_id', $tenancy_id)->first();
+        if($rel)
+            return $rel->team ? $rel->team->name : "Não definido";
+        return "Não definido";
+    }
+
+    // retorna o id da equipe
+    public function teamId($tenancy_id = NULL){
+        if($tenancy_id === NULL)
+            return $this->team ? $this->team->id : NULL;
+        $rel = $this->roles()->where('tenancy_id', $tenancy_id)->first();
+        if($rel)
+            return $rel->team ? $rel->team->id : NULL;
+        return NULL;
+    }
+
+    // update team
+    public function update_team($tenancy_id, $team_id){
+        $rel = $this->roles()->where('tenancy_id', $tenancy_id)->first();
+
+        if(! $rel)
+            return false;
+
+        $rel->team_id = $team_id;
+        $rel->save();
+
+        return true;
+    }
+
+    public function getRoleName($tenancy_id){
+
+        return $this->roles()->where('tenancy_id', $tenancy_id)->first()->showName();;
     }
 
 
-    /* Retorna notificações a partir de um timestamp até o momento atual 
+    /* Retorna notificações a partir de um timestamp até o momento atual
      * Usado para notificações ajax
      *
      * $timestamp recebe data minima
@@ -190,7 +249,8 @@ class User extends Authenticatable
     /*belongsToMany*/
     public function roles()
     {
-        return $this->belongsToMany('App\Models\Role');
+        //return $this->belongsToMany('App\Models\Role');
+        return $this->hasMany('App\Models\RoleUser');
     }
 
     /*belongsTo*/

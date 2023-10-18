@@ -91,7 +91,13 @@
                             <select name="filtro_equipe" id="filtro_equipe" class="form-control">
                                 <option value="">Todas as Equipes</option>
                                 @foreach ($listTeams as $key => $value)
-                                    <option value="{{ $key }}" @if(isset($blockfilter['team'])?$blockfilter['team']==$key:false) selected @endif >{{ $value }}</option>
+                                    @if(is_string($value))
+                                        <option value="{{ $key }}" @if(isset($blockfilter['team'])?$blockfilter['team']==$key:false) selected @endif >{{ $value }}</option>
+                                    @else
+                                        @foreach($value as $k => $v)
+                                            <option value="{{ $v->id }}" @if(isset($blockfilter['team'])?$blockfilter['team']==$v->id:false) selected @endif >{{ $v->name }}</option>
+                                        @endforeach
+                                    @endif
                                 @endforeach
                             </select>
                         </div>
@@ -105,7 +111,13 @@
                             <select name="filtro_assistent" id="filtro_assistent" class="form-control">
                                 <option value="">Todos os usuários</option>
                                 @foreach($listUsers as $user)
-                                    <option value="{{$user->id}}" @if(isset($blockfilter['user'])?$blockfilter['user']==$user->id:false) selected @endif>{{$user->name}}</option>
+                                    @if(!isset($user->id))
+                                        @foreach($user as $u)
+                                            <option value="{{$u->id}}" @if(isset($blockfilter['user'])?$blockfilter['user']==$u->id:false) selected @endif>{{$u->name}}</option>
+                                        @endforeach
+                                    @else
+                                        <option value="{{$user->id}}" @if(isset($blockfilter['user'])?$blockfilter['user']==$user->id:false) selected @endif>{{$user->name}}</option>
+                                    @endif
                                 @endforeach
                             </select>
                         </div>

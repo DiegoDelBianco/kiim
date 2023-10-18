@@ -5,6 +5,7 @@ namespace App\Policies;
 use App\Models\Product;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
+use Auth;
 
 class ProductPolicy
 {
@@ -21,7 +22,22 @@ class ProductPolicy
      */
     public function view(User $user, Product $product): bool
     {
-        //
+        $tenancy_id = $product->tenancy_id;
+
+        if(Auth::user()->hasRole('admin', $tenancy_id))
+            return true;
+
+        if(Auth::user()->hasRole('manager', $tenancy_id))
+            return true;
+
+        if(Auth::user()->hasRole('team_manager', $tenancy_id))
+            return true;
+
+        if(Auth::user()->hasRole('basic', $tenancy_id))
+            return true;
+
+        //if(Auth::user()->hasRole('Assistente'))
+        return false;
     }
 
     /**
@@ -37,7 +53,19 @@ class ProductPolicy
      */
     public function update(User $user, Product $product): bool
     {
-        //
+        $tenancy_id = $product->tenancy_id;
+
+        if(Auth::user()->hasRole('admin', $tenancy_id))
+            return true;
+
+        if(Auth::user()->hasRole('manager', $tenancy_id))
+            return true;
+
+        if(Auth::user()->hasRole('team_manager', $tenancy_id))
+            return false;
+
+        //if(Auth::user()->hasRole('Assistente'))
+        return false;
     }
 
     /**

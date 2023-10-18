@@ -11,6 +11,7 @@ use App\Models\CustomerService;
 use App\Models\Team;
 use App\Models\Website;
 use App\Models\User;
+use App\Models\Tenancy;
 
 class CustomerController extends Controller
 {
@@ -19,16 +20,34 @@ class CustomerController extends Controller
      */
     public function index()
     {
-        $listTeams          = Team::where('tenancy_id', Auth::user()->tenancy_id)->get();
-        $listWebsites       = Website::where('tenancy_id', Auth::user()->tenancy_id)->get();
-        $listUsers          = User::where('tenancy_id', Auth::user()->tenancy_id)->get();
+
+
+        $tenancies = [];
+        $users_by_tenancy = [];
+        $teams_by_tenancy = [];
+
+        foreach(Auth::user()->roles as $tenancy){
+            $current_tenancy = Tenancy::find($tenancy->tenancy_id);
+            $tenancies[$tenancy->tenancy_id] = $current_tenancy;
+            if(Auth::user()->can('manage-users', $tenancy->tenancy_id)){
+                $users_by_tenancy[$tenancy->tenancy_id] = $current_tenancy->users;
+            }
+            if(Auth::user()->can('manage-teams', $tenancy->tenancy_id)){
+                $teams_by_tenancy[$tenancy->tenancy_id] = $current_tenancy->teams;
+            }
+        }
+
+        $listTeams          = $teams_by_tenancy; //Team::where('tenancy_id', Auth::user()->tenancy_id)->get();
+        //$listWebsites       = Website::where('tenancy_id', Auth::user()->tenancy_id)->get();
+        $listUsers          = $users_by_tenancy; //User::where('tenancy_id', Auth::user()->tenancy_id)->get();
         $list_reason_finish =  CustomerService::listStatusFinish();
 
         return view('customers.list-customers', compact(
                 'listTeams',
-                'listWebsites',
+                //'listWebsites',
                 'listUsers',
-                'list_reason_finish'
+                'list_reason_finish',
+                'tenancies',
             ));
     }
 
@@ -64,6 +83,29 @@ class CustomerController extends Controller
      */
     public function store(Request $request)
     {
+        $tenancy_id = $request->tenancy_id;
+        $tenancy = Tenancy::find($tenancy_id);
+
+        if(!$tenancy)
+            return redirect()->back()->with('error', 'Empresa não encontrada');
+
+        $rel = $tenancy->users()->where('user_id', Auth::user()->id)->first();
+
+        if(!$rel)
+            return redirect()->back()->with('error', 'Você não tem permissão para adicionar leads nesta empresa');
+
+        if($request->team_id){
+            $rel_team = $tenancy->teams()->where('id', $request->team_id)->first();
+            if(!$rel_team)
+                return redirect()->back()->with('error', 'Ops algo deu errado, a equipe e empresa selecionadas não batem.');
+        }
+
+        if($request->user_id){
+            $rel_user = $tenancy->users()->where('user_id', $request->user_id)->first();
+            if(!$rel_user)
+                return redirect()->back()->with('error', 'Ops algo deu errado, o usuário e empresa selecionadas não batem.');
+        }
+
         $customer = Customer::create([
             'team_id' => $request->team_id,
             'user_id' => $request->user_id,
@@ -74,7 +116,7 @@ class CustomerController extends Controller
             'phone' => $request->phone,
             'ddd_2' => $request->ddd_2,
             'phone_2' => $request->phone_2,
-            'tenancy_id' => Auth::user()->tenancy_id,
+            'tenancy_id' => $request->tenancy_id,
         ]);
 
         if($customer) {

@@ -40,43 +40,13 @@ class RegisteredUserController extends Controller
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
-        // create a new tenancy
-        $tenancy = Tenancy::create([
-            'name' => $request->business_name,
-        ]);
-
-        // create roles
-        $role_master = Role::create([
-            'name' => 'Master',
-            'description' => 'Administrador',
-            'tenancy_id' => $tenancy->id,
-        ]);
-        $role_gerente = Role::create([
-            'name' => 'Gerente',
-            'description' => 'Gerente de Equipe',
-            'tenancy_id' => $tenancy->id,
-        ]);
-        $role_basico = Role::create([
-            'name' => 'Básico',
-            'description' => 'Acesso básico para atendimento',
-            'tenancy_id' => $tenancy->id,
-        ]);
-
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'tenancy_id' => $tenancy->id,
-        ]);
-
-        // assign roles to user
-        RoleUser::create([
-            'user_id' => $user->id,
-            'role_id' => $role_master->id,
-            'tenancy_id' => $tenancy->id,
-        ]);
-
-        event(new Registered($user));
+        // create a new tenancy with user
+        $user = Tenancy::newTenancyWithUser(
+            $request->business_name,
+            $request->name,
+            $request->email,
+            $request->password,
+        );
 
         Auth::login($user);
 

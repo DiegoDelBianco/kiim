@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Team extends Model
 {
     use HasFactory, SoftDeletes;
-    
+
     protected $fillable = [
         'name',
         'picture',
@@ -30,7 +30,7 @@ class Team extends Model
     {
         return $this->belongsTo('App\Models\Tenancy');
     }
-    
+
     /*hasMany*/
     public function websites()
     {
@@ -46,6 +46,7 @@ class Team extends Model
     }
     public function users()
     {
-        return $this->hasMany('App\Models\User');
+        //return $this->hasMany('App\Models\User');
+        return $this->belongsToMany('App\Models\User', 'role_user', 'team_id', 'user_id');
     }
 }

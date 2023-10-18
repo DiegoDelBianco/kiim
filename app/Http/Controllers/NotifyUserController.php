@@ -138,17 +138,18 @@ class NotifyUserController extends Controller
     }
 
     public function getLabelMenu(){
-        $customers = 0;
+        $customers = Customer::baseQueryUserSearch();
+        $customers = $customers->count();
         $customers_services = 0;
         $customers_services_remarketing = 0;
-
+/*
         if( Auth::user()->hasRole('Master') ){
             $customers = Customer::where('tenancy_id', Auth::user()->tenancy_id)->count();
         }elseif( Auth::user()->hasRole('Gerente') ){
             $customers = Customer::where('tenancy_id', Auth::user()->tenancy_id)->where('team_id', Auth::user()->team_id)->count();
         }else
             $customers = Customer::where('tenancy_id', Auth::user()->tenancy_id)->where('user_id', Auth::user()->id)->count();
-
+*/
         $customers_services = Customer::countQueueByUser();
         $customers_services_remarketing = Customer::countRemarketingByUser();
 

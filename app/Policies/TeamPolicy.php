@@ -38,15 +38,17 @@ class TeamPolicy
      */
     public function update(User $user, Team $team): bool
     {
-        if(Auth::user()->tenancy_id != $team->tenancy_id) return false;
+        $tenancy_id = $team->tenancy_id;
 
-        if(Auth::user()->hasRole('Master')) {
+        if(Auth::user()->hasRole('admin', $tenancy_id))
             return true;
 
-        } elseif(Auth::user()->hasRole('Gerente')) {
-            return Auth::user()->team_id === $team;
+        if(Auth::user()->hasRole('manager', $tenancy_id))
+            return true;
 
-        }
+        if(Auth::user()->hasRole('team_manager', $tenancy_id))
+            return Auth::user()->team_id === $team_id;
+
         return false;
     }
 

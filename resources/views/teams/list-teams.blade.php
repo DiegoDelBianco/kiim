@@ -20,7 +20,7 @@
 
             <div class="pt-2 pe-2">
                 <button data-toggle="modal" data-target="#modal-create-team" type="button" class="btn btn-primary" >
-                    <i class="fas fa-plus"></i> 
+                    <i class="fas fa-plus"></i>
                     <span>Nova equipe</span>
                 </button>
             </div>
@@ -41,7 +41,9 @@
         @include('teams.components.modals.create-team-modal')
 
             <div class="card-body">
-                <table class="table">
+                @foreach($tenancies as $tenancy)
+                <h2>Equipes para {{$tenancy->name}}</h2>
+                <table class="table mb-4">
                     <thead>
                         <tr>
                             <th scope="col">Nome</th>
@@ -51,21 +53,29 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($teams as $team)
+                        @foreach($teams_by_tenancy[$tenancy->id] as $team)
                             <tr>
                                 <td>{{ $team->name }}</td>
                                 <td>{{ count($team->users) }}</td>
                                 <td>{{ count($team->customers) }}</td>
                                 <td>
-                                    <button data-toggle="modal" data-target="#modal-edit-team-{{$team->id}}" class="btn btn-primary">Editar</button>
-                                    <button href="#" class="btn btn-danger">Excluir</button>
+                                    <button data-toggle="modal" data-target="#modal-edit-team-{{$team->id}}" class="btn btn-primary"><i class="fas fa-edit"></i></button>
+                                    <a data-toggle="modal" data-target="#deleteTeam{{ $team->id }}" class="btn btn-danger"><i class="fas fa-trash"></i></a>
                                     @include('teams.components.modals.edit-team-modal')
+                                    @include('teams.components.modals.delete-team-modal')
                                 </td>
 
                             </tr>
                         @endforeach
                     </tbody>
                 </table>
+                {{-- alert if no teams --}}
+                @if(count($teams_by_tenancy[$tenancy->id]) == 0)
+                    <div class="alert alert-warning alert-dismissible fade show mb-5" role="alert">
+                        <strong>Nenhuma equipe cadastrada!</strong> Clique no botão <strong>+Nova Equipe</strong> para cadastrar uma nova equipe.
+                    </div>
+                @endif
+                @endforeach
             </div>
     </div><!-- FIM DA CANVAS -->
 

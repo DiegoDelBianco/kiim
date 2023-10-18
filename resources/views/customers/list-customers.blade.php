@@ -24,12 +24,16 @@
             </nav>
 
             @can('store-customer')
-                <div class="pt-2 pe-2">
-                    <button data-toggle="modal" data-target="#modal-create-customer" type="button" class="btn btn-primary" aria-expanded="false">
-                    <i class="fas fa-user-plus"></i>
-                    <span>Novo Lead</span>
-                    </button>
-                </div>
+                    <div class="pt-2 pe-2">
+                        <button data-toggle="modal" data-target="#modal-create-customer" type="button" class="btn btn-primary" aria-expanded="false">
+                            <i class="fas fa-user-plus"></i>
+                            <span>Novo Lead</span>
+                        </button>
+                        <a href="{{route('customers.importCsv')}}" class="btn btn-primary" aria-expanded="false">
+                            <i class="fas fa-file-download"></i>
+                            <span>CSV</span>
+                        </a>
+                    </div>
             @endcan
         </div>
         <!-- Fim Bread Crumbs e Botão +Add Cliente -->
@@ -110,7 +114,7 @@
         $('#clientes-table').html('<div class="spinner-border m-5" role="status"><span class="sr-only"></span></div>');
          $('#page').val(pagina);
          var dados =  $('#form').serialize();
-         
+
          $.ajax({
             url: "{{route('customers.list.ajax')}}",
             method: 'GET',
@@ -179,7 +183,7 @@ $(document).ready(function() {
             $('select[name="filtro_assistent"]').append('<option value="">Todos os Assistentes</option>');
         }
     });*/
-    $('select[name="sector_id"]').on('change', function() {
+    /*$('select[name="sector_id"]').on('change', function() {
         $('select[name="team_id"]').empty();
         var stateID = $(this).val();
         if(stateID) {
@@ -197,7 +201,7 @@ $(document).ready(function() {
         }else{
             $('select[name="team_id"]').append('<option value="">Todos os Assistentes</option>');
         }
-    });
+    });*/
 
 });
 /****  Fim script para filtros  ****/
@@ -206,11 +210,60 @@ $(document).ready(function() {
 
 <script>
 /*****  Script para o modal de criar customer  ******/
-$(document).ready(function() {  
+
+
+// Pass variables arrays from php ($listTeams and $listUsers) to javascript
+var listTeams = {!! json_encode($listTeams) !!};
+var listUsers = {!! json_encode($listUsers) !!};
+
+$(document).ready(function() {
+    $('select[name="tenancy_id"]').on('change', function() {
+        var tenancy_id = $(this).val();
+        $('select[name="team_id"]').html('<option value="">Na Fila</option>');
+        $('select[name="user_id"]').html('<option value="">Na Fila</option>');
+
+        // foreach in listTeams var
+        for (var key in listTeams) {
+            console.log(listTeams[key][0]['tenancy_id'] );
+            if(listTeams[key][0]['tenancy_id'] == tenancy_id){
+                for(var key2 in listTeams[key]) {
+                    console.log(listTeams[key][key2]['name'] );
+                    $('select[name="team_id"]').append('<option value="'+ listTeams[key][key2]['id'] +'">'+ listTeams[key][key2]['name'] +'</option>');
+                }
+            }
+        }
+
+        // foreach in listTeams var
+        for (var key in listUsers) {
+            console.log(listUsers[key][0]['tenancy_id'] );
+            if(listUsers[key][0]['pivot']['tenancy_id'] == tenancy_id){
+                for(var key2 in listUsers[key]) {
+                    console.log(listUsers[key][key2]['name'] );
+                    $('select[name="user_id"]').append('<option value="'+ listUsers[key][key2]['id'] +'">'+ listUsers[key][key2]['name'] +'</option>');
+                }
+            }
+        }
+
+/*
+        listTeams.forEach(function(team){
+            if(team['tenancy_id'] == tenancy_id){
+                $('select[name="team_id"]').append('<option value="'+ team['id'] +'">'+ team['name'] +'</option>');
+            }
+        });
+
+
+
+        listUsers.map(function(user){
+            if(user['tenancy_id'] == tenancy_id){
+                $('select[name="user_id"]').append('<option value="'+ user['id'] +'">'+ user['name'] +'</option>');
+            }
+        });
+*/
+    });
     $('select[name="team_id"]').on('change', function() {
-        $('select[name="user_id"]').empty();
+        $('select[name="user_id"]').html('<option value="">Na Fila</option>');
         var team_id = $(this).val();
-        $.ajax({
+        /*$.ajax({
             url: "{{route('users.list.ajax.by-team')}}",
             type: "GET",
             data: {team_id: team_id},
@@ -221,7 +274,7 @@ $(document).ready(function() {
                     $('select[name="user_id"]').append('<option value="'+ assistent['id'] +'">'+ assistent['name'] +'</option>');
                 });
             }
-        });
+        });*/
     });
 });
 /*****  FIM - Script para o modal de criar customer  ******/

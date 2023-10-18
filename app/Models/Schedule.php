@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Auth;
 class Schedule extends Model
 {
     use HasFactory, SoftDeletes;
-    
+
     protected $fillable = [
         'description',
         'report',
@@ -40,7 +40,7 @@ class Schedule extends Model
 
     /*
      * Listagem de agendamentos para o usuário logado, pelo status
-     * 
+     *
      * $status recebe o status a ser pesquisado
      *   1 aguardando
      *   2 feitos
@@ -50,16 +50,16 @@ class Schedule extends Model
      * $team_id caso seja passado, retorna apenas os vinculados á equipe especificada
      * $user_id caso seja passado, retorna apenas os vinculados ao usuário especificado
      */
-    public static function listByStatus($status, $team_id = false, $user_id = false){
+    public static function listByStatus($status/*, $team_id = false, $user_id = false*/){
 
         $where = [];
-        
+
         // Aguardando
         if($status == 1){
             $where[] = ['schedules.date','>=', date('Y-m-d')];
             $where[] = ['schedules.status','=', '1'];
         }
-        
+
         // Feito
         if($status == 2){
             $where[] = ['schedules.status','=', '2'];
@@ -82,8 +82,10 @@ class Schedule extends Model
             $where[] = ['schedules.status','=', '1'];
         }
 
-        if($team_id != false) $where[] = ['users.team_id', '=', $team_id];
-        if($user_id != false) $where[] = ['CustomerService.user_id', '=', $user_id];
+        //if($team_id != false) $where[] = ['users.team_id', '=', $team_id];
+        //if($user_id != false) $where[] = ['CustomerService.user_id', '=', $user_id];
+
+        $where[] = ['schedules.user_id', '=', Auth::user()->id];
 
         $schedules = self::listWithWhere($where);
 
@@ -109,18 +111,20 @@ class Schedule extends Model
         $where[] = ['users.id','=',Auth::user()->id];
 
         return self::where($where)
-                ->rightJoin('customer_services', 'schedules.customer_services_id', '=', 'customer_services.id')
-                ->rightJoin('users', 'users.id', '=', 'customer_services.user_id')
-                ->select(   'schedules.id as id', 
-                            'users.id as user_id', 
-                            'users.team_id as team_id', 
-                            'users.name as user_name', 
-                            'schedules.date as date', 
+        //->rightJoin('customer_services', 'schedules.customer_service_id', '=', 'customer_services.id')
+        //->rightJoin('customers', 'customer_services.user_id', '=', 'customers.id')
+                ->rightJoin('users', 'users.id', '=', 'schedules.user_id')
+                ->select(   'schedules.id as id',
+                            'users.id as user_id',
+                            'users.team_id as team_id',
+                            'users.name as user_name',
+                            'schedules.date as date',
                             'schedules.time as time',
                             'schedules.status as status',
                             'schedules.description as description',
-                            'customer_services.customer_id as customer_id',
-                            'customer.name as customer_name')
+                            //'customer_services.customer_id as customer_id',
+                            //'customers.name as customer_name'
+                            )
                 ->orderBy('schedules.date', 'asc')
                 ->orderBy('schedules.time', 'asc')
                 ->get();
@@ -129,21 +133,21 @@ class Schedule extends Model
     /*
      * Gera um calendário de agendamentos organizado por mês
      *
-     * 
-     * 
+     *
+     *
      */
-    public static function calendarMonth($periodo = 1, $month = false, $year = false, $difference = 0, $team_id = false, $assistent = false){
+    public static function calendarMonth($periodo = 1, $month = false, $year = false, $difference = 0/*, $team_id = false, $assistent = false*/){
 
         if($month == false) $month = date('m');
         if($year == false) $year = date('Y');
 
         $diasDaSemana = [
-            '0' => 'Domingo', 
-            '1' => 'Segunda', 
-            '2' => 'Terça', 
-            '3' => 'Quarta', 
-            '4' => 'Quinta', 
-            '5' => 'Sexta', 
+            '0' => 'Domingo',
+            '1' => 'Segunda',
+            '2' => 'Terça',
+            '3' => 'Quarta',
+            '4' => 'Quinta',
+            '5' => 'Sexta',
             '6' => 'Sabado'];
 
         $firstDayWeek = date('w', strtotime(date("Y-".$month."-01")));
@@ -176,7 +180,7 @@ class Schedule extends Model
             $where = [];
             $date = $year."-".str_pad($month , 2 , '0' , STR_PAD_LEFT)."-".str_pad($nowMonthDay , 2 , '0' , STR_PAD_LEFT);
             $where[] = ['date','=', $date];
-            if($team_id != false) $where[] = ['team_id','=', $team_id];
+            // if($team_id != false) $where[] = ['team_id','=', $team_id];
 
             $schedules = self::listWithWhere($where);
 
@@ -221,7 +225,7 @@ class Schedule extends Model
             }
         }
 
-        return ['calendar' => $response, 'month' =>  $month, 'year' => $year]; 
+        return ['calendar' => $response, 'month' =>  $month, 'year' => $year];
     }
 
     /******         Relacionamentos do DB         ******/
@@ -241,7 +245,7 @@ class Schedule extends Model
     {
         return $this->belongsTo('App\Models\Tenancy');
     }
-    
+
     /*hasMany*/
 
 }

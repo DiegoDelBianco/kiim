@@ -16,35 +16,33 @@ class UserPolicy
         //
     }
 
-    public function view(User $user, $userEditar)
+    public function view(User $user, $userEditar, $tenancy_id)
     {
-        if(Auth::user()->tenancy_id != $user->tenancy_id) return false;
-        
-        if(Auth::user()->hasRole('Master')) {
+        if(Auth::user()->hasRole('admin', $tenancy_id))
             return true;
 
-        } elseif(Auth::user()->hasRole('Gerente')) {
+        if(Auth::user()->hasRole('manager', $tenancy_id))
+            return true;
+
+        if(Auth::user()->hasRole('team_manager', $tenancy_id))
             return Auth::user()->team_id === $userEditar->team_id;
 
-        } elseif(Auth::user()->hasRole('Assistente')) {
-            return false;
-
-        }
+        //if(Auth::user()->hasRole('Assistente'))
+        return false;
     }
 
-    public function update(User $user, $userEditar)
+    public function update(User $user, $userEditar, $tenancy_id)
     {
-        if(Auth::user()->tenancy_id != $user->tenancy_id) return false;
-
-        if(Auth::user()->hasRole('Master')) {
+        if(Auth::user()->hasRole('admin', $tenancy_id))
             return true;
 
-        } elseif(Auth::user()->hasRole('Gerente')) {
+        if(Auth::user()->hasRole('manager', $tenancy_id))
+            return true;
+
+        if(Auth::user()->hasRole('team_manager', $tenancy_id))
             return Auth::user()->team_id === $userEditar->team_id;
 
-        } elseif(Auth::user()->hasRole('Assistente')) {
-            return false;
-
-        }
+        //if(Auth::user()->hasRole('Assistente'))
+        return false;
     }
 }

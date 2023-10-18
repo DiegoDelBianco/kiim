@@ -38,7 +38,7 @@ class Customer extends Model
         'customer_service_id',
     ];
 
-    protected $stage_title = [  
+    protected $stage_title = [
             1 => "Novo",                                // Antigo 1
             2 => "Em atendimento",                      // Antigo 6
             3 => "Negociando",                          // Antigo 2
@@ -100,7 +100,7 @@ class Customer extends Model
     public static function stageTitle($stage_id){
         $instance = new Customer;
 
-        return 
+        return
             isset($instance->stage_title[$stage_id])
                 ? $instance->stage_title[$stage_id] : "Não definido";
     }
@@ -109,7 +109,7 @@ class Customer extends Model
      * Retorna o titulo para apresentação do estágio do customer instanciado
      */
     public function stage(){
-        return 
+        return
             isset($this->stage_title[$this->stage_id])
                 ? $this->stage_title[$this->stage_id] : "Não definido";
     }
@@ -124,17 +124,17 @@ class Customer extends Model
      * $view recebe a view que usará no retorno da listagem, defina como false para retornar panas o objeto
      */
     public static function listRemarketingByUser($user, $page = 0, $limit = 100, $view = 'customers.components.listRemarketing'){
-        $customers = self::select('SELECT 
+        $customers = self::select('SELECT
                                     customers.*
-                                    FROM customers 
-                                        WHERE 
+                                    FROM customers
+                                        WHERE
                                             stage_id <> 10 AND
                                             stage_id <> 4 AND
-                                            user_id = :user_id AND 
+                                            user_id = :user_id AND
                                             (n_customer_service > 1 OR (n_customer_service = 1 AND opened = 2))
                                             AND tenancy_id = '.Auth::user()->tenancy_id.'
                                         LIMIT :limit
-                                        OFFSET :offset', 
+                                        OFFSET :offset',
                                         ['user_id' => $user, 'limit' => $limit, 'offset' => ($page*$limit)]);
         if($view)
             return view($view, ["customers" => $customers, "list_users" => false]);
@@ -152,33 +152,51 @@ class Customer extends Model
     public static function countRemarketingByUser($user = false){
 
         if($user === false) $user = Auth::user();
-        
-        $remarketingList = DB::select('SELECT 
+/*
+        $remarketingList = DB::select('SELECT
             count(id) AS count
-            FROM customers WHERE 
+            FROM customers WHERE
                 stage_id <> 7 AND
                 stage_id <> 9 AND
-                (user_id = :user_id OR (team_id = :team_id and (user_id IS NULL OR user_id = "")) OR ((user_id IS NULL OR user_id = "") AND (team_id IS NULL OR team_id = ""))) 
+                (user_id = :user_id OR (team_id = :team_id and (user_id IS NULL OR user_id = "")) OR ((user_id IS NULL OR user_id = "") AND (team_id IS NULL OR team_id = "")))
                 AND  (n_customer_service > 1 OR (n_customer_service = 1 AND opened = 2))
-                AND tenancy_id = '.Auth::user()->tenancy_id, 
+                AND tenancy_id = '.Auth::user()->tenancy_id,
                 ['user_id' => $user->id, 'team_id' => $user->team_id]);
+*/
+            $list = Customer::baseQueryUserQueue();
 
-            return $remarketingList[0]->count;
+            $list->where(function($query) use ($user){
+                $query->where([['customers.n_customer_service','>', 1]])
+                    ->orWhere(function($query) use ($user){
+                        $query->where('n_customer_service', 1 )
+                            ->where('opened', 2);
+                    });
+            });
+
+
+            return $list->count('*');
     }
 
     public static function countQueueByUser($user = false){
 
         if($user === false) $user = Auth::user();
-        
-        $remarketingList = DB::select('SELECT 
+/*
+        $remarketingList = DB::select('SELECT
             count(id) AS count
-            FROM customers WHERE 
-                (user_id = :user_id OR (team_id = :team_id and (user_id IS NULL OR user_id = "")) OR ((user_id IS NULL OR user_id = "") AND (team_id IS NULL OR team_id = ""))) 
+            FROM customers WHERE
+                (user_id = :user_id OR (team_id = :team_id and (user_id IS NULL OR user_id = "")) OR ((user_id IS NULL OR user_id = "") AND (team_id IS NULL OR team_id = "")))
                 AND  n_customer_service = 0 and opened = 2
-                AND tenancy_id = '.Auth::user()->tenancy_id, 
+                AND tenancy_id = '.Auth::user()->tenancy_id,
                 ['user_id' => $user->id, 'team_id' => $user->team_id]);
+*/
 
-            return $remarketingList[0]->count;
+        $list = Customer::baseQueryUserQueue();
+
+        $list->where('n_customer_service', 0)
+            ->where('opened', 2);
+
+
+        return $list->count('*');
     }
 
     // Direciona o custmer para um novo usuario
@@ -273,11 +291,91 @@ class Customer extends Model
         if($this->stage_id >= 6) return false;
 
         if(Auth::user()->hasRole("Master") OR
-                        (Auth::user()->hasRole("Gerente") && 
-                            Auth::user()->team_id == $this->team_id)) 
+                        (Auth::user()->hasRole("Gerente") &&
+                            Auth::user()->team_id == $this->team_id))
             return true;
 
         return false;
+    }
+
+    public static function baseQueryUserSearch($useView = true){
+
+        $tenancy_field = ($useView?'tenancy':'tenancy_id');
+
+        $tenancies_manage_users = [];
+        $tenancies_manage_users_only_team = [];
+        $teams_for_tenancies = [];
+        foreach(Auth::user()->roles as $tenancy){
+            if(Auth::user()->can('manage-any-users', $tenancy->tenancy_id)){
+                $tenancies_manage_users[] = $tenancy->tenancy_id;
+            }
+            if(Auth::user()->can('manage-only-team-users', $tenancy->tenancy_id)){
+                $tenancies_manage_users_only_team[] = $tenancy->tenancy_id;
+                $teams_for_tenancies[] = Auth::user()->teamId($tenancy->tenancy_id);
+            }
+        }
+
+        if($useView){
+            $customers = ViewBaseCustomer::where('id', '>', '0');
+        }else{
+            $customers = Customer::where('id', '>', '0');
+        }
+
+        $customers->where( function($query) use ($tenancies_manage_users, $tenancies_manage_users_only_team, $teams_for_tenancies, $tenancy_field) {
+
+            $query->where('user_id', Auth::user()->id);
+
+            if(count($tenancies_manage_users) > 0){
+                $query->orWhereIn($tenancy_field, $tenancies_manage_users);
+            }
+
+            if(count($tenancies_manage_users_only_team) > 0 and count($teams_for_tenancies) > 0){
+                $query->orWhere(function($query) use ($tenancies_manage_users_only_team, $teams_for_tenancies, $tenancy_field){
+                    print_r($tenancies_manage_users_only_team);
+                    $query->whereIn($tenancy_field, $tenancies_manage_users_only_team);
+                    $query->whereIn('team_id', $teams_for_tenancies);
+                });
+            }
+        });
+
+        return $customers;
+    }
+
+    public static function baseQueryUserQueue(){
+
+        $tenancy_field = ('tenancy_id');
+
+        $tenancies = [];
+        $teams = [];
+        foreach(Auth::user()->roles as $tenancy){
+            $tenancies[] = $tenancy->tenancy_id;
+            $teams[] = Auth::user()->teamId($tenancy->tenancy_id);
+        }
+
+        $customers = Customer::where('opened', '2');
+        $customers->where([['stage_id', '<' , '6']]);
+
+        $customers->where(function($query) use ($tenancies, $teams, $tenancy_field){
+            // Obtem o proximo na lista pelo usuário
+            $query->where('user_id', Auth::user()->id);
+
+            // Pega pela lista da equipe
+            $query->orWhere(function($query) use ($tenancy_field, $tenancies, $teams){
+                $query->whereIn($tenancy_field, $tenancies);
+                $query->whereIn('team_id', $teams);
+                $query->whereNull('user_id');
+            });
+
+            // Pega pela lista geral
+            $query->orWhere(function($query) use ($tenancies, $tenancy_field){
+                $query->whereIn($tenancy_field, $tenancies);
+                $query->whereNull('team_id');
+                $query->whereNull('user_id');
+            });
+
+        });
+
+        return $customers;
     }
 
 
@@ -290,46 +388,35 @@ class Customer extends Model
      */
     public static function getListByFilters($args, $paginate = true){
 
-        // Se o Usuário for Master
-        if(Auth::user()->hasRole('Master')) {
-            $customers = ViewBaseCustomer::where([['id','>','0'], ['tenancy', '=', Auth::user()->tenancy_id]]);
+        $customers = self::baseQueryUserSearch();
 
-        // Se o Usuário for Gerente
-        } elseif(Auth::user()->hasRole('Gerente')) {
-            $customers = ViewBaseCustomer::where('team_id', Auth::user()->team_id);
-
-        // Se o Usuário for Assistente
-        } else{
-            $customers = ViewBaseCustomer::where('user_id', Auth::user()->id)
-                ->whereIn('stage_id', [1, 2, 3, 7, 5]);
-        }
 
         // Remove clientes excluidos da listagem
-        if($args->filtro_stage != 10) 
+        if($args->filtro_stage != 10)
             $customers->where('stage_id', '<>', '10');
 
         if ($args->filtro_nome)
             $customers->where('name', 'like', '%'.$args->filtro_nome.'%');
 
-        if ($args->filtro_produto) 
+        if ($args->filtro_produto)
             $customers->where('product', 'like', '%'.$args->filtro_produto.'%');
 
-        if ($args->filtro_phone) 
+        if ($args->filtro_phone)
             $customers->where('concat_phone', 'like', '%'.$args->filtro_phone.'%');
 
-        if ($args->filtro_id) 
+        if ($args->filtro_id)
             $customers->where('id', $args->filtro_id);
 
-        if ($args->filtro_assistent) 
+        if ($args->filtro_assistent)
             $customers->where('user_id', $args->filtro_assistent);
 
-        if ($args->filtro_website) 
+        if ($args->filtro_website)
             $customers->where('website_id', $args->filtro_website);
 
-        if ($args->filtro_stage) 
+        if ($args->filtro_stage)
             $customers->where('stage_id', $args->filtro_stage);
 
-        if ($args->filtro_equipe) 
+        if ($args->filtro_equipe)
             $customers->where('team_id', $args->filtro_equipe);
 
         if ($args->filtro_data) {
@@ -340,6 +427,7 @@ class Customer extends Model
             $search2 = date("Y-m-d H:i:s", strtotime($data[1]));
             $customers->whereBetween('created_at', [$search1, $search2]);
         }
+
 
         if ($args->filtro_alt) {
             $search = $args->filtro_alt;

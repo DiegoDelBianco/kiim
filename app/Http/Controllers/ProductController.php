@@ -7,18 +7,31 @@ use App\Http\Requests\UpdateProductRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Product;
+use App\Models\Tenancy;
+use Gate;
 
 class ProductController extends Controller
 {
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $products = Product::where('tenancy_id', Auth::user()->tenancy_id)->get();
+        $tenancies = [];
+        foreach(Auth::user()->roles as $tenancy){
+            //if(Auth::user()->can('manage-products', $tenancy->tenancy_id)){
+                $tenancies[] = $tenancy->tenancy_id;
+            //}
+        }
+
+        // select * from products where tenancy_id in $tenancies array
+        $products = Product::whereIn('tenancy_id', $tenancies)->get();
+
+        //$products = Product::where('tenancy_id', Auth::user()->tenancy_id)->get();
         return view('products.list-products', compact(
                 'products'
-            ));    
+            ));
     }
 
     /**
@@ -26,7 +39,17 @@ class ProductController extends Controller
      */
     public function create()
     {
-        return view('products.create-product');    
+
+        $tenancies = [];
+
+        foreach(Auth::user()->roles as $tenancy){
+            if(Auth::user()->can('manage-products', $tenancy->tenancy_id)){
+                $current_tenancy = Tenancy::find($tenancy->tenancy_id);
+                $tenancies[$tenancy->tenancy_id] = $current_tenancy;
+            }
+        }
+
+        return view('products.create-product', compact('tenancies'));
     }
 
     /**
@@ -34,6 +57,16 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
+        $tenancy_id = $request->tenancy_id;
+        $tenancy = Tenancy::find($tenancy_id);
+
+        if(!$tenancy)
+            return redirect()->back()->with('error', 'Empresa não encontrada');
+
+        if(Gate::denies('manage-products', $tenancy->id))
+            return redirect()->back()->with('error', 'Você não tem permissão para criar equipes nesta empresa');
+
+
         $product = Product::create(['title' => $request->title,
                 'cep' => $request->cep,
                 'neighborhood' => $request->neighborhood,
@@ -41,7 +74,7 @@ class ProductController extends Controller
                 'uf' => $request->uf,
                 'address' => $request->address,
                 'description' => $request->description,
-                'tenancy_id' => Auth::user()->tenancy_id]);
+                'tenancy_id' => $request->tenancy_id]);
 
 
         if($product) {
@@ -64,7 +97,10 @@ class ProductController extends Controller
      */
     public function edit(Product $product)
     {
-        return view('products.edit-product', compact('product'));    
+
+        $this->authorize('view', $product);
+
+        return view('products.edit-product', compact('product'));
     }
 
     /**
@@ -72,14 +108,15 @@ class ProductController extends Controller
      */
     public function update(Request $request, Product $product)
     {
+        $this->authorize('update', $product);
+
         $product->update(['title' => $request->title,
                 'cep' => $request->cep,
                 'neighborhood' => $request->neighborhood,
                 'city' => $request->city,
                 'uf' => $request->uf,
                 'address' => $request->address,
-                'description' => $request->description,
-                'tenancy_id' => Auth::user()->tenancy_id]);
+                'description' => $request->description]);
 
 
         return redirect()->route('products')->with('success','Produto atualizado!');
@@ -90,6 +127,10 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
-        //
+        $this->authorize('update', $product);
+
+        $product->delete();
+
+        return back()->with('success','Imóvel removido!');
     }
 }

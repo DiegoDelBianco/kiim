@@ -8,20 +8,34 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Team;
 use App\Models\User;
 use App\Models\Metrics;
+use App\Models\Tenancy;
 
 class MetricsController extends Controller
 {
     public function index()
     {
+        if(!isset($_GET['tenancy'])){
+
+
+            $tenancies = [];
+
+            foreach(Auth::user()->roles as $tenancy){
+                $current_tenancy = Tenancy::find($tenancy->tenancy_id);
+                $tenancies[$tenancy->tenancy_id] = $current_tenancy;
+            }
+
+            return view('metrics.select-tenancy', compact('tenancies'));
+        }
+
+        $tenancy_id = $_GET['tenancy'];
+
         // Se o Usuário for Master
-        if(Auth::user()->hasRole('Master') OR Auth::user()->hasRole('Monitor')) {
-            //die("teste2");
-            $teams = Team::where('tenancy_id', Auth::user()->tenancy_id)->get();
+        if(Auth::user()->hasRole('Master', $tenancy_id)) {
+            $teams = Team::where('tenancy_id', $tenancy_id)->get();
 
             $tipoPeriodo = 1;
             $assistent = false;
-            //$listAssistents = User::where("sector_id", 3)->get();
-            $listAssistents = User::where('tenancy_id', Auth::user()->tenancy_id)->get();
+            $listAssistents = User::where('tenancy_id', $tenancy_id)->get();
 
 
             if(isset($_GET["assistent"])?$_GET["assistent"]>0:false) $assistent = $_GET["assistent"];
@@ -53,7 +67,7 @@ class MetricsController extends Controller
             $sufixo = "";
             if($tipoPeriodo == 2) $sufixo = " (".str_pad($mes , 2 , '0' , STR_PAD_LEFT)."/".$ano.") ";
             if($tipoPeriodo == 3) $sufixo = " (".$ano.") ";
-            if($tipoPeriodo == 4){ 
+            if($tipoPeriodo == 4){
                 $explode = explode('-', $dateini);
                 $monthini = date('M', mktime(0, 0, 0, $explode[1], 10));
                 $yearini = $explode[0];
@@ -82,7 +96,7 @@ class MetricsController extends Controller
 
             return view('metrics.index', [
                 'title' => $title.$sufixo,
-                'tabs' => $tabs, 
+                'tabs' => $tabs,
                 'leads' => array_reverse($allLeads),                                        // Total de leads
                 'novosLeads' => array_reverse($newLeads),                                   // Leads sem remarketing
                 'remarketing' => array_reverse($remarketing),                               // Leads de remarketing
@@ -100,13 +114,13 @@ class MetricsController extends Controller
             ]);
 
         // Se o Usuário for Gerente
-        } elseif(Auth::user()->hasRole('Gerente')) {
+        } elseif(Auth::user()->hasRole('Gerente', $tenancy_id)) {
 
             $team_id = Auth::user()->team_id;
             $team_selected = Team::where('team_id', $team_id)->first();
             //$listAssistents = User::where([["sector_id", 3], ["team_id", $team_id]])->get();
             //$listAssistents = User::listAssistents($team_id);
-            $listAssistents = User::where('tenancy_id', Auth::user()->tenancy_id)->where('team_id', $team_id)->get();
+            $listAssistents = User::where('tenancy_id', $tenancy_id)->where('team_id', $team_id)->get();
             $assistent = false;
 
             if(isset($_GET["assistent"])?$_GET["assistent"]>0:false) $assistent = $_GET["assistent"];
@@ -135,7 +149,7 @@ class MetricsController extends Controller
             $sufixo = "";
             if($tipoPeriodo == 2) $sufixo = " (".str_pad($mes , 2 , '0' , STR_PAD_LEFT)."/".$ano.") ";
             if($tipoPeriodo == 3) $sufixo = " (".$ano.") ";
-            if($tipoPeriodo == 4){ 
+            if($tipoPeriodo == 4){
                 $explode = explode('-', $dateini);
                 $monthini = date('M', mktime(0, 0, 0, $explode[1], 10));
                 $yearini = $explode[0];
@@ -152,10 +166,10 @@ class MetricsController extends Controller
             $tabs = [];
             //$tabs[] = ['title' => 'Equipe: '.$team_selected->team, 'route' => route('metrics.geral')];
             $tabs[] = ['title' => 'Equipe: '.$team_selected->team, 'route' => route('metrics')];
-            
+
             return view('metrics.index', [
                 'title' => 'Equipe: '.$team_selected->team.$sufixo,
-                'tabs' => $tabs, 
+                'tabs' => $tabs,
                 'leads' => array_reverse($allLeads),                                        // Total de leads
                 'novosLeads' => array_reverse($newLeads),                                   // Leads sem remarketing
                 'remarketing' => array_reverse($remarketing),                               // Leads de remarketing
@@ -172,7 +186,7 @@ class MetricsController extends Controller
                 //'vendasConcluída' => $vendasConcluída
             ]);
         // Se o Usuário for Assistente
-        } elseif(Auth::user()->hasRole('Assistente')) {
+        } elseif(Auth::user()->hasRole('Assistente', $tenancy_id)) {
 
             $team_id = Auth::user()->team_id;
             $assistent_id = Auth::user()->id;
@@ -211,7 +225,7 @@ class MetricsController extends Controller
             $sufixo = "";
             if($tipoPeriodo == 2) $sufixo = " (".str_pad($mes , 2 , '0' , STR_PAD_LEFT)."/".$ano.") ";
             if($tipoPeriodo == 3) $sufixo = " (".$ano.") ";
-            if($tipoPeriodo == 4){ 
+            if($tipoPeriodo == 4){
                 $explode = explode('-', $dateini);
                 $monthini = date('M', mktime(0, 0, 0, $explode[1], 10));
                 $yearini = $explode[0];
@@ -228,10 +242,10 @@ class MetricsController extends Controller
             $tabs = [];
             //$tabs[] = ['title' => 'Meus relatórios de venda', 'route' => route('metrics.geral')];
             $tabs[] = ['title' => 'Meus relatórios de venda', 'route' => route('metrics')];
-            
+
             return view('metrics.index', [
                 'title' => 'Meus relatórios de venda '.$sufixo,
-                'tabs' => $tabs, 
+                'tabs' => $tabs,
                 'leads' => array_reverse($allLeads),                                        // Total de leads
                 'novosLeads' => array_reverse($newLeads),                                   // Leads sem remarketing
                 'remarketing' => array_reverse($remarketing),                               // Leads de remarketing
