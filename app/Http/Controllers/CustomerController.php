@@ -149,7 +149,9 @@ class CustomerController extends Controller
             4 => ($customer->customer_service ? $customer->customer_service->countScheduling(4) : 0),
             5 => ($customer->customer_service ? $customer->customer_service->countScheduling(5) : 0)
             ];
-        return view('customers.show-customer', compact('customer', 'btn_end_customer_service', 'btn_start_customer_service', 'schedules'));
+
+        $list_reason_finish =  CustomerService::listStatusFinish();
+        return view('customers.show-customer', compact('customer', 'btn_end_customer_service', 'btn_start_customer_service', 'schedules', 'list_reason_finish'));
     }
 
     /**
