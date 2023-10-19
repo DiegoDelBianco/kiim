@@ -17,25 +17,143 @@ class Customer extends Model
      *
      * @var array<int, string>
      */
+
+/*
++-------------------------+---------------------+------+-----+---------+----------------+
+| id                      | bigint(20) unsigned | NO   | PRI | NULL    | auto_increment |
+| name                    | varchar(255)        | YES  |     | NULL    |                |
+| last_name               | varchar(255)        | YES  |     | NULL    |                |
+| email                   | varchar(255)        | YES  |     | NULL    |                |
+| ddi                     | varchar(255)        | YES  |     | 55      |                |
+| ddd                     | varchar(255)        | YES  |     | NULL    |                |
+| phone                   | varchar(255)        | YES  |     | NULL    |                |
+| ddi_2                   | varchar(255)        | YES  |     | 55      |                |
+| ddd_2                   | varchar(255)        | YES  |     | NULL    |                |
+| phone_2                 | varchar(255)        | YES  |     | NULL    |                |
+| whatsapp                | varchar(255)        | YES  |     | NULL    |                |
+| birth                   | date                | YES  |     | NULL    |                |
+| stage_id                | int(11)             | NO   |     | 1       |                |
+| public_description      | mediumtext          | YES  |     | NULL    |                |
+| private_description     | mediumtext          | YES  |     | NULL    |                |
+| no_mail_send            | tinyint(1)          | NO   |     | 0       |                |
+| n_customer_service      | int(11)             | YES  |     | 0       |                |
+| opened                  | int(11)             | NO   |     | 2       |                |
+| website_id              | bigint(20) unsigned | YES  | MUL | NULL    |                |
+| user_id                 | bigint(20) unsigned | YES  | MUL | NULL    |                |
+| team_id                 | bigint(20) unsigned | YES  | MUL | NULL    |                |
+| tenancy_id              | bigint(20) unsigned | NO   | MUL | NULL    |                |
+| buy_date                | date                | YES  |     | NULL    |                |
+| pay_date                | date                | YES  |     | NULL    |                |
+| buy_price               | decimal(10,2)       | YES  |     | NULL    |                |
+| seller_commission       | decimal(10,2)       | YES  |     | NULL    |                |
+| deleted_at              | timestamp           | YES  |     | NULL    |                |
+| created_at              | timestamp           | YES  |     | NULL    |                |
+| updated_at              | timestamp           | YES  |     | NULL    |                |
+| product_id              | bigint(20) unsigned | YES  | MUL | NULL    |                |
+| customer_timeline_id    | bigint(20) unsigned | YES  | MUL | NULL    |                |
+| customer_service_id     | bigint(20) unsigned | YES  | MUL | NULL    |                |
+| customer_csv_import_id  | bigint(20) unsigned | YES  | MUL | NULL    |                |
+| value                   | decimal(10,2)       | YES  |     | NULL    |                |
+| rent                    | tinyint(1)          | NO   |     | 0       |                |
+| rent_adjustment         | varchar(255)        | YES  |     | NULL    |                |
+| rent_adjustment_last    | date                | YES  |     | NULL    |                |
+| rent_adjustment_next    | date                | YES  |     | NULL    |                |
+| rent_guarantee          | varchar(255)        | YES  |     | NULL    |                |
+| rent_guarantee_value    | varchar(255)        | YES  |     | NULL    |                |
+| product_type            | varchar(255)        | YES  |     | NULL    |                |
+| acquisition_date        | timestamp           | YES  |     | NULL    |                |
+| first_contact_date      | timestamp           | YES  |     | NULL    |                |
+| last_contact_date       | timestamp           | YES  |     | NULL    |                |
+| next_contact_date       | timestamp           | YES  |     | NULL    |                |
+| source                  | varchar(255)        | YES  |     | NULL    |                |
+| source_other            | varchar(255)        | YES  |     | NULL    |                |
+| source_campaign_id      | varchar(255)        | YES  |     | NULL    |                |
+| source_campaign         | varchar(255)        | YES  |     | NULL    |                |
+| source_ads_account      | varchar(255)        | YES  |     | NULL    |                |
+| source_business_account | varchar(255)        | YES  |     | NULL    |                |
+| source_ad               | varchar(255)        | YES  |     | NULL    |                |
+| source_id               | varchar(255)        | YES  |     | NULL    |                |
+| source_form             | varchar(255)        | YES  |     | NULL    |                |
+| marital_status          | varchar(255)        | YES  |     | NULL    |                |
+| cpf                     | varchar(255)        | YES  |     | NULL    |                |
+| familiar_income         | varchar(255)        | YES  |     | NULL    |                |
+| income                  | varchar(255)        | YES  |     | NULL    |                |
+| job                     | varchar(255)        | YES  |     | NULL    |                |
+| restriction             | tinyint(1)          | YES  |     | NULL    |                |
+| entry                   | varchar(255)        | YES  |     | NULL    |                |
+| installments            | int(11)             | YES  |     | NULL    |                |
+| installment_value       | decimal(10,2)       | YES  |     | NULL    |                |
+| region                  | varchar(255)        | YES  |     | NULL    |                |
+| fgts                    | decimal(10,2)       | YES  |     | NULL    |                |
+| best_time               | varchar(255)        | YES  |     | NULL    |                |
+*/
+
     protected $fillable = [
         'name',
         'last_name',
         'email',
+        'ddi',
+        'ddd',
         'phone',
+        'ddi_2',
+        'ddd_2',
         'phone_2',
         'whatsapp',
         'birth',
-        'customer_stage',
+        'stage_id',
         'public_description',
         'private_description',
         'no_mail_send',
         'n_customer_service',
+        'opened',
         'website_id',
         'user_id',
         'team_id',
         'tenancy_id',
+        'buy_date',
+        'pay_date',
+        'buy_price',
+        'seller_commission',
+        'deleted_at',
+        'created_at',
+        'updated_at',
         'product_id',
+        'customer_timeline_id',
         'customer_service_id',
+        'customer_csv_import_id',
+        'value',
+        'rent',
+        'rent_adjustment',
+        'rent_adjustment_last',
+        'rent_adjustment_next',
+        'rent_guarantee',
+        'rent_guarantee_value',
+        'product_type',
+        'acquisition_date',
+        'first_contact_date',
+        'last_contact_date',
+        'next_contact_date',
+        'source',
+        'source_other',
+        'source_campaign_id',
+        'source_campaign',
+        'source_ads_account',
+        'source_business_account',
+        'source_ad',
+        'source_id',
+        'source_form',
+        'marital_status',
+        'cpf',
+        'familiar_income',
+        'income',
+        'job',
+        'restriction',
+        'entry',
+        'installments',
+        'installment_value',
+        'region',
+        'fgts',
+        'best_time'
     ];
 
     protected $stage_title = [

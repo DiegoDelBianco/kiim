@@ -45,6 +45,31 @@
                         </div>
 
                         <div class="mb-3">
+                            <label for="sourceAddUserForm" class="form-label">Fonte</label>
+                            <select class="form-control" id="sourceAddUserForm" name="source" onclick="if(this.value=='Outros'){ $('.wrapSourceOtherAddUserForm').show(); }else{ $('.wrapSourceOtherAddUserForm').hide(); }">
+                                <option value="" selected >Selecione</option>
+                                <option value="Network"> Network </option>
+                                <option value="Indicação"> Indicação </option>
+                                <option value="Facebook (Tráfego Pago)"> Facebook (Tráfego Pago) </option>
+                                <option value="Instagram (Tráfego Pago)"> Instagram (Tráfego Pago) </option>
+                                <option value="Google (Tráfego Pago)"> Google (Tráfego Pago) </option>
+                                <option value="Tiktok (Tráfego Pago)"> Tiktok (Tráfego Pago) </option>
+                                <option value="Facebook (Tráfego Orgânico)"> Facebook (Tráfego Orgânico) </option>
+                                <option value="Instagram (Tráfego Orgânico)"> Instagram (Tráfego Orgânico) </option>
+                                <option value="Google (Tráfego Orgânico)"> Google (Tráfego Orgânico) </option>
+                                <option value="Tiktok (Tráfego Orgânico)"> Tiktok (Tráfego Orgânico) </option>
+                                <option value="Disparo de E-mail"> Disparo de E-mail </option>
+                                <option value="Disparo Whatsapp"> Disparo Whatsapp </option>
+                                <option value="Outros"> Outros </option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3 wrapSourceOtherAddUserForm" style="display:none">
+                            <label for="sourceOtherAddUserForm" class="form-label">Descreva a fonte</label>
+                            <input class="form-control" id="sourceOtherAddUserForm" name="source_other" />
+                        </div>
+
+                        <div class="mb-3">
                             <label for="nomeAddClienteForm" class="form-label">Nome</label>
                             <input type="text" class="form-control" id="nomeAddClienteForm" name="name" placeholder="Nome do Cliente" maxlength="60">
                         </div>

@@ -177,20 +177,20 @@ class CustomerService extends Model
             case 6:
                 $stage = 4;
                 //Cancela todos os agendamentos pendentes
-                Scheduling::where([['customer_service_id','=', $this->id],['status','=','1']])
+                Schedule::where([['customer_service_id','=', $this->id],['status','=','1']])
                     ->update(['status' => '3']);
                 break;
             case 7:
                 $stage = 4;
                 //Cancela todos os agendamentos pendentes
-                Scheduling::where([['customer_service_id','=', $this->id],['status','=','1']])
+                Schedule::where([['customer_service_id','=', $this->id],['status','=','1']])
                     ->update(['status' => '3']);
                 break;
             default:
                 // Motivo: Outros -> Remarketing
                 $stage = 4;
                 //Cancela todos os agendamentos pendentes
-                Scheduling::where([['customer_service_id','=', $this->id],['status','=','1']])
+                Schedule::where([['customer_service_id','=', $this->id],['status','=','1']])
                     ->update(['status' => '3']);
                 break;
         }

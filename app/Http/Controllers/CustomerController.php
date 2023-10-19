@@ -105,9 +105,11 @@ class CustomerController extends Controller
             if(!$rel_user)
                 return redirect()->back()->with('error', 'Ops algo deu errado, o usuário e empresa selecionadas não batem.');
         }
-
+        //die($request->source);
         $customer = Customer::create([
             'team_id' => $request->team_id,
+            'source' => $request->source,
+            'source_other' => $request->source_other,
             'user_id' => $request->user_id,
             'name' => $request->name,
             'email' => $request->email,
