@@ -183,9 +183,9 @@
                                     @if($day['day']!=0)
                                         <p class="day-wrap" ><span class="day">{{$day['day']==0?'':$day['day']}}</span></p>
                                         @foreach($day['schedules'] as $tarefa)
-                                            {{--<p class="scheduling  {{$tarefa->getStatus(TRUE)}}-wrap" onClick="showScheduling('{{route("customer.edit", $tarefa->customer_id)}}', '{{$tarefa->customer_name}}', '{{$tarefa->assistent_name}}', `{{str_replace("`",'"',$tarefa->description)}}`, '{{date("d/m/Y",strtotime($tarefa->date))}}', '{{substr($tarefa->hour, 0, 5)}}', '{{$tarefa->getStatus(TRUE)}}')"  data-toggle="modal" data-target="#modalSchedulingInfo" >--}}
-                                            <p class="scheduling  {{$tarefa->getStatus(TRUE)}}-wrap" onClick="showScheduling('{{route("schedules.update.done", $tarefa->id)}}', '{{route("schedules.update.cancel", $tarefa->id)}}', '{{$tarefa->user_name}}', `{{str_replace("`",'"',$tarefa->description)}}`, '{{date("d/m/Y",strtotime($tarefa->date))}}', '{{substr($tarefa->time, 0, 5)}}', '{{$tarefa->getStatus(TRUE)}}')"  data-toggle="modal" data-target="#modalSchedulingInfo" >
-                                                <span class="assistent-name">{{$tarefa->user_name}}</span>
+                                            {{--<p class="scheduling  {{$tarefa->getStatus(TRUE)}}-wrap" onClick="showScheduling('{{route("customer.edit", $tarefa->customer_id)}}', '{{$tarefa->customer_name}}', '{{$tarefa->assistent_name}}', `{{str_replace("`",'"',$tarefa->description)}}`, `{{str_replace("`",'"',$tarefa->title)}}`, '{{date("d/m/Y",strtotime($tarefa->date))}}', '{{substr($tarefa->hour, 0, 5)}}', '{{$tarefa->getStatus(TRUE)}}', '{{$tarefa->customer_id? route('customers.show', $tarefa->customer_id):null}}')"  data-toggle="modal" data-target="#modalSchedulingInfo" >--}}
+                                            <p class="scheduling  {{$tarefa->getStatus(TRUE)}}-wrap" onClick="showScheduling('{{route("schedules.update.done", $tarefa->id)}}', '{{route("schedules.update.cancel", $tarefa->id)}}', '{{$tarefa->user_name}}', `{{str_replace("`",'"',$tarefa->description)}}`, `{{str_replace("`",'"',$tarefa->title)}}`, '{{date("d/m/Y",strtotime($tarefa->date))}}', '{{substr($tarefa->time, 0, 5)}}', '{{$tarefa->getStatus(TRUE)}}', '{{$tarefa->customer_id? route('customers.show', $tarefa->customer_id):null}}')"  data-toggle="modal" data-target="#modalSchedulingInfo" >
+                                                <span class="assistent-name">{{$tarefa->title}}</span>
                                                 @if($tarefa->time != "")
                                                     <span class="hour">{{substr($tarefa->time, 0, 5)}}</span>
                                                 @endif
@@ -345,12 +345,18 @@
   </style>
 
   <script>
-      function showScheduling(doneUrl, cancelUrl, vendedor, nota, data, hora, status){
+      function showScheduling(doneUrl, cancelUrl, vendedor, nota, title, data, hora, status, linkCustomer){
         /*$('#modalSchedulingInfo .ver-atendimento').attr('href', route);*/
         /*$('#modalSchedulingInfo .customer-name').html(cliente);*/
         $('#modalSchedulingInfo .form-schedules-done').attr('action', doneUrl);
         $('#modalSchedulingInfo .form-schedules-cancel').attr('action', cancelUrl);
+        $('#modalSchedulingInfo .info-customer-link').attr('href', linkCustomer);
+        $('#modalSchedulingInfo .info-customer-link').hide();
+        if(linkCustomer){
+            $('#modalSchedulingInfo .info-customer-link').show();
+        }
         $('#modalSchedulingInfo .assistent-name').html(vendedor);
+        $('#modalSchedulingInfo .scheduling-title').html(title);
         $('#modalSchedulingInfo .scheduling-note').html(nota);
         $('#modalSchedulingInfo .scheduling-date').html(data);
         $('#modalSchedulingInfo .scheduling-hour').html(hora);

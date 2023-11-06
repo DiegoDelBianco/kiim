@@ -9,6 +9,7 @@
                 <h4 class="modal-title" style="text-align: center; width: 100%;">Tarefa <span class="status"></span></h4>
             </div>
             <div class="modal-body">
+                <p><span class="label">Titulo: </span> <span class="scheduling-title"></span> <a class="info-customer-link btn btn-primary" href="#">Ver</a>  </p>
                 <p><span class="label">Status:</span> <span class="status status-name"></span></p>
                 <!--p><span class="label">Cliente: </span> <span class="customer-name"></span></p-->
                 <p><span class="label">Usuário: </span> <span class="assistent-name"></span></p>

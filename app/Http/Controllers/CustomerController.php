@@ -145,9 +145,9 @@ class CustomerController extends Controller
         $btn_end_customer_service = ( ($customer->customerService ? ( $customer->customerService->status == 1 or $customer->customerService->status == 2 ) : false) );
         $btn_start_customer_service = false; //( $customer->opened == 2 );
         $schedules = [
-            1 => ($customer->customer_service ? $customer->customer_service->countScheduling(1) : 0),
-            4 => ($customer->customer_service ? $customer->customer_service->countScheduling(4) : 0),
-            5 => ($customer->customer_service ? $customer->customer_service->countScheduling(5) : 0)
+            1 => ($customer->customerService ? $customer->customerService->countScheduling(1) : 0),
+            4 => ($customer->customerService ? $customer->customerService->countScheduling(4) : 0),
+            5 => ($customer->customerService ? $customer->customerService->countScheduling(5) : 0)
             ];
 
         $list_reason_finish =  CustomerService::listStatusFinish();

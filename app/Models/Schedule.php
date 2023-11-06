@@ -20,6 +20,8 @@ class Schedule extends Model
         'customer_service_id',
         'user_id',
         'tenancy_id',
+        'title',
+        'customer_id',
     ];
 
     // Retonar o titulo do status do agendamento instanciado
@@ -119,6 +121,9 @@ class Schedule extends Model
                             'users.team_id as team_id',
                             'users.name as user_name',
                             'schedules.date as date',
+                            'schedules.title as title',
+                            'schedules.customer_id as customer_id',
+                            'schedules.customer_service_id as customer_service_id',
                             'schedules.time as time',
                             'schedules.status as status',
                             'schedules.description as description',

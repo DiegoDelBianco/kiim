@@ -113,7 +113,7 @@ Route::middleware('auth')->group(function () {
     // Agendamentos
     Route::get('/schedules', [ScheduleController::class, 'index'])->name('schedules');
     Route::post('/schedules', [ScheduleController::class, 'store'])->name('schedules.store');
-    Route::post('/schedules/{customer_service}', [storeCustomerService::class, 'store'])->name('schedules.store.customer-service');
+    Route::post('/schedules/{customer_service}', [ScheduleController::class, 'storeWithCS'])->name('schedules.store.customer-service');
     Route::patch('/schedules/{schedule}', [ScheduleController::class, 'edit'])->name('schedules.edit');
     Route::post('/schedules/up-done/{schedule}', [ScheduleController::class, 'editDone'])->name('schedules.update.done');
     Route::post('/schedules/up-cancel/{schedule}', [ScheduleController::class, 'editCancel'])->name('schedules.update.cancel');

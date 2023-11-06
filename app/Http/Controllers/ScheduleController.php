@@ -132,6 +132,50 @@ class ScheduleController extends Controller
             'tenancy_id' => $tenancy_id,
             'user_id' => Auth::user()->id,
             'description' => $request->description,
+            'title' => $request->title,
+            'date' => $request->date,
+            'time' => $request->time,
+        ]);
+
+
+        $timeline = new CustomerTimeline;
+        //$event = $timeline->newTimeline($customer_service->customer_id, "Novo agendamento de tarefa, dia ".date('d/m/Y',strtotime($request->date))." as ".$request->time , 5);
+        return back()->with('success','Agendamento realizado com sucesso!');
+    }
+
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function storeWithCS(request $request, CustomerService $customer_service)
+    {
+        if (!$customer_service)
+            return redirect()->back()->with('error', 'Atendimento não encontrado');
+
+        $tenancy_id = $customer_service->tenancy_id;
+        $tenancy = Tenancy::find($tenancy_id);
+
+        if(!$tenancy)
+            return redirect()->back()->with('error', 'Empresa não encontrada');
+
+        $rel = $tenancy->users()->where('user_id', Auth::user()->id)->first();
+
+        if(!$rel)
+            return redirect()->back()->with('error', 'Você não tem permissão para adicionar leads nesta empresa');
+
+        //if(!($customer_service->status == 1 OR $customer_service->status == 2)) return back()->with('error','Atendimento indisponivel para novos agendamentos');
+
+        if(strlen($request->description) > 255 ) return back()->with('error','Descrição muito longa, deve ter no máximo 255 caracteres');
+        if(strlen($request->description) == 0 ) return back()->with('error','Descrição é obrigatória');
+
+        $result = Schedule::create([
+            //'customer_service_id' => $customer_service->id,
+            'title' => $customer_service->customer->name,
+            'tenancy_id' => $tenancy_id,
+            'user_id' => Auth::user()->id,
+            'customer_id' => $customer_service->customer_id,
+            'customer_service_id' => $customer_service->id,
+            'description' => $request->description,
             'date' => $request->date,
             'time' => $request->time,
         ]);

@@ -1,10 +1,10 @@
 <!-- Modal Whatsapp -->
-<div class="modal fade" id="tarefaModal" role="dialog">
+<div class="modal fade" id="modal-create-schedule" role="dialog">
     <div class="modal-dialog">
 
         <!-- Modal content-->
         <div class="modal-content">
-            <form class="text-center pt-3" method="POST" action="{{ route('schedules.store', $customer->customerService) }}">
+            <form class="text-center pt-3" method="POST" action="{{ route('schedules.store.customer-service', $customer->customerService) }}">
                 @csrf
                 <div class="modal-header">
                     <h4 class="modal-title">Agendar Tarefa</h4>

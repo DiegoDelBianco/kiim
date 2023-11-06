@@ -232,6 +232,7 @@ class CustomerService extends Model
      */
     public function countScheduling($status = 0)
     {
+
         if($status == 0)
             return count($this->schedules);
 

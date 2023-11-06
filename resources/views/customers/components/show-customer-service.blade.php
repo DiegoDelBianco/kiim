@@ -23,7 +23,9 @@
                 <button class="horizontal__tablinks col-md-12 btn btn-info mb-2 @if(isset($_GET['tab'])?$_GET['tab']==1:true) active @endif" data-tab='horizontal__tab01' onclick="horizontalOpenTab(this)" >Atendimento</button>
                 <button class="horizontal__tablinks col-md-12 btn btn-info mb-2 @if(isset($_GET['tab'])?$_GET['tab']==2:false) active @endif" data-tab='horizontal__tab02' onclick="horizontalOpenTab(this)" >Dados do Cliente</button>
                 <button class="horizontal__tablinks col-md-12 btn btn-info mb-2 @if(isset($_GET['tab'])?$_GET['tab']==3:false) active @endif" data-tab='horizontal__tab03' onclick="horizontalOpenTab(this)" >Timeline</button>
+
                 <button class="horizontal__tablinks col-md-12 btn btn-info mb-2 @if(isset($_GET['tab'])?$_GET['tab']==4:false) active @endif" data-tab='horizontal__tab04' onclick="horizontalOpenTab(this)" >Agendamentos
+                        @if($schedules[1] || $schedules[4] || $schedules[5]) <br /> @endif
                         @if($schedules[1]) <span class="status aguardando" style="border-radius: 50%;">{{$schedules[1]}}</span> @endif
                         @if($schedules[4]) <span class="status hoje" style="border-radius: 50%; margin: 0px;">{{$schedules[4]}}</span> @endif
                         @if($schedules[5]) <span class="status atrasado" style="border-radius: 50%; margin: 0px;">{{$schedules[5]}}</span> @endif
