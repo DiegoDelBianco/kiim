@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\WhatsappNotificationController;
+use App\Http\Controllers\Api\FacebookApiLeadController;
 
 /*
 |--------------------------------------------------------------------------
@@ -22,3 +23,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 // Whatsapp WebHook
 Route::get('/wpp-notification', [WhatsappNotificationController::class, 'webhookGet'])->name('api.webhook.wpp.get');
 Route::post('/wpp-notification', [WhatsappNotificationController::class, 'webhookPost'])->name('api.webhook.wpp.post');
+
+Route::get('/facebook-leads', [FacebookApiLeadController::class, 'facebookLeadGet'])->name('api.webhook.facebook.get');
