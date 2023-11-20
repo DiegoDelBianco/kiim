@@ -2,7 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\WhatsappNotificationController;
+use App\Http\Controllers\Api\WhatsappNotificationController;
 use App\Http\Controllers\Api\FacebookApiLeadController;
 
 /*

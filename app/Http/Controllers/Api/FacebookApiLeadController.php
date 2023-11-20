@@ -6,6 +6,12 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Log;
 use File;
+use FacebookAds\Api;
+use FacebookAds\Logger\CurlLogger;
+use FacebookAds\Object\Lead;
+use FacebookAds\Object\AdAccount;
+use FacebookAds\Object\Campaign;
+use FacebookAds\Object\Fields\CampaignFields;
 
 class FacebookApiLeadController extends Controller
 {

@@ -1,5 +1,8 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
+
+
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\NotifyUserController;
 use App\Http\Controllers\UserController;
@@ -16,8 +19,8 @@ use App\Http\Controllers\SysProductTenancyController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\MetricsController;
 use App\Http\Controllers\WhatsappNotificationController;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CustomerCsvImportController;
+use App\Http\Controllers\ApiController;
 
 /*
 |--------------------------------------------------------------------------
@@ -152,6 +155,9 @@ Route::middleware('auth')->group(function () {
     // Métricas
     Route::get('/metrics', [MetricsController::class, 'index'])->name('metrics');
     Route::get('/metrics/team/{team}', [MetricsController::class, 'index'])->name('metrics.team');
+
+    // Configurações de API
+    Route::get('/facebook-config', [ApiController::class, 'facebookConfig'])->name('configApi.facebook');
 
 });
 
