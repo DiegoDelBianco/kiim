@@ -25,3 +25,4 @@ Route::get('/wpp-notification', [WhatsappNotificationController::class, 'webhook
 Route::post('/wpp-notification', [WhatsappNotificationController::class, 'webhookPost'])->name('api.webhook.wpp.post');
 
 Route::get('/facebook-leads', [FacebookApiLeadController::class, 'facebookLeadGet'])->name('api.webhook.facebook.get');
+Route::post('/facebook-leads', [FacebookApiLeadController::class ,'facebookLeadPost'])->name('api.webhook.facebook.post');
