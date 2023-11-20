@@ -35,7 +35,7 @@
                 <h2>Configurar API do facebook</h2>
 
                 <fb:login-button
-                config_id="{config_id}"
+                config_id="249449844514112"
                 onlogin="checkLoginState();">
                 </fb:login-button>
             </div>
