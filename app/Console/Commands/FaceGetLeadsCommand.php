@@ -77,6 +77,8 @@ class FaceGetLeadsCommand extends Command
 
             $customer->source = 'facebook form';
             $customer->source_id = $lead->id;
+            $customer->source_form  = $lead->source_form;
+            $customer->source_ad  = $lead->ad_id;
             $customer->tenancy_id = $user->tenancy_id;
 
             foreach($lead->field_data as $data){
