@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Log;
 use File;
-use FacebookAds\Api;
+
+use App\Models\UserFacebookApiFont;
+
 use FacebookAds\Logger\CurlLogger;
 use FacebookAds\Object\Lead;
 use FacebookAds\Object\AdAccount;
@@ -34,9 +36,9 @@ class FacebookApiLeadController extends Controller
         if(!$request->has('entry')) return true;
 
 
-        $access_token = config("facebook_api.fb_cli_token");
-        $app_secret = config("facebook_api.fb_app_secret");
-        $app_id = config("facebook_api.fb_app_id");
+        // $access_token = config("apis.fb.fb_cli_token");
+        $app_secret = config("apis.fb.app_secrect");
+        $app_id = config("apis.fb.app_id");
 
         foreach($request->entry as $entry){
             $log = ' [' . date('Y-m-d H:i:s') . "] POST (ENTRY) - ". print_r($entry, true) . PHP_EOL . PHP_EOL;
@@ -52,15 +54,46 @@ class FacebookApiLeadController extends Controller
                 );
 
 
-                $id = $change['value']['leadgen_id'];
+                $face_lead_id = $change['value']['leadgen_id'];
 
-                $api = Api::init($app_id, $app_secret, $access_token);
+                $page_id = $change['value']['page_id'];
+                $adgroup_id = $change['value']['adgroup_id'];
+                $form_id = $change['value']['form_id'];
+                $ad_id = $change['value']['ad_id'];
+
+                $font = UserFacebookApiFont::where([['type', '=', 'page_id'], ['info_id', '=', $page_id]])
+                    ->orWhere([['type', '=', 'adgroup_id'], ['info_id', '=', $adgroup_id]])
+                    ->orWhere([['type', '=', 'form_id'], ['info_id', '=', $form_id]])
+                    ->orWhere([['type', '=', 'ad_id'], ['info_id', '=', $ad_id]])
+                    ->first();
+
+                if(!$font){
+                    $log = ' [' . date('Y-m-d H:i:s') . "] FONTE NAO ENCONTRADA " . PHP_EOL . PHP_EOL;
+                    File::append(
+                        storage_path('logs/fb_webhook.log'),
+                        $log
+                    );
+                    return false;
+                }
+
+                $token = $font->user->facebook_api_token;
+
+                if(!$token){
+
+                    $log = ' [' . date('Y-m-d H:i:s') . "] TOKEN DO USUARIO NAO ENCONTRADO" . PHP_EOL . PHP_EOL;
+                    File::append(
+                        storage_path('logs/fb_webhook.log'),
+                        $log
+                    );
+                    return false;
+                }
+
+                $api = Api::init($app_id, $app_secret, $token);
                 $api->setLogger(new CurlLogger());
 
-                $fields = array(
-                );
-                $params = array(
-                );
+                $fields = array();
+                $params = array();
+
                 $response =  json_encode((new Lead($id))->getSelf(
                   $fields,
                   $params
