@@ -10,6 +10,7 @@ class CustomerCsvImport extends Model
     use HasFactory;
 
     public static $fields_to_save = [
+        'created_at' => ['title' => 'Criação', 'func' => 'date'],
         'name' => ['title' => 'Nome', 'func' => 'string'],
         'last_name' => ['title' => 'Sobre nome', 'func' => 'string'],
         'email' => ['title' => 'Email', 'func' => 'string'],
