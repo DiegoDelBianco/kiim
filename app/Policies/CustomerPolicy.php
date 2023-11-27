@@ -22,18 +22,21 @@ class CustomerPolicy
      */
     public function view(User $user, Customer $customer): bool
     {
-        if(Auth::user()->tenancy_id != $customer->tenancy_id) return false;
+        $tenancy_id = $customer->tenancy_id;
 
-        if(Auth::user()->hasRole('Master')) {
+        if(Auth::user()->hasAnyRoles(['admin', 'manager'], $tenancy_id))
             return true;
 
-        } elseif(Auth::user()->hasRole('Gerente')) {
-            return Auth::user()->team_id === $customer->team_id;
-
-        } else {
-            return Auth::user()->id === $customer->user_id;
-
+        if(Auth::user()->hasAnyRoles(['team_manager'], $tenancy_id)){
+            if(Auth::user()->teamId($tenancy_id) === $customer->team_id)
+                return true;
         }
+
+        if(Auth::user()->hasAnyRoles(['basic'], $tenancy_id)
+            AND Auth::user()->id === $customer->user_id)
+                return true;
+
+        return false;
     }
 
     /**
