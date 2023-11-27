@@ -26,6 +26,7 @@ class CustomerCsvImport extends Model
         'acquisition_date' => ['title' => 'Data de aquisição', 'func' => 'date'],
         'first_contact_date' => ['title' => 'Data do primeiro contato', 'func' => 'date'],
         'last_contact_date' => ['title' => 'Data do ultimo contato', 'func' => 'date'],
+        'source' => ['title' => 'Fonte', 'func' => 'string'],
         'source_campaign' => ['title' => 'Campanha (Nome)', 'func' => 'string'],
         'marital_status' => ['title' => 'Estado civil', 'func' => 'string'],
         'cpf' => ['title' => 'CPF', 'func' => 'numeric'],

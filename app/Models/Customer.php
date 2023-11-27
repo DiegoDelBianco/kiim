@@ -153,7 +153,8 @@ class Customer extends Model
         'installment_value',
         'region',
         'fgts',
-        'best_time'
+        'best_time',
+        'real_state_project'
     ];
 
     protected $stage_title = [
