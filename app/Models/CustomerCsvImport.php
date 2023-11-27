@@ -13,6 +13,7 @@ class CustomerCsvImport extends Model
         'created_at' => ['title' => 'Criação', 'func' => 'date'],
         'name' => ['title' => 'Nome', 'func' => 'string'],
         'last_name' => ['title' => 'Sobre nome', 'func' => 'string'],
+        'real_state_project' => ['title' => 'Empreendimento', 'func' => 'string'],
         'email' => ['title' => 'Email', 'func' => 'string'],
         'ddi' => ['title' => 'DDI', 'func' => 'pre_phone'],
         'ddd' => ['title' => 'DDD', 'func' => 'pre_phone'],
