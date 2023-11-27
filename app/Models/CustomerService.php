@@ -94,7 +94,7 @@ class CustomerService extends Model
             $nextCustomer->where('n_customer_service', '=', 0);
         }
 
-        $nextCustomer = $nextCustomer->orderBy('updated_at', 'desc')->first();
+        $nextCustomer = $nextCustomer->orderBy('created_at', 'asc')->first();
 
         $this->nextCustomer         = $remarketing?false:$nextCustomer;
         $this->next_remarketing     = $remarketing?$nextCustomer:false;
