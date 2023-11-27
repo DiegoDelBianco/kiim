@@ -54,8 +54,23 @@ class CustomerController extends Controller
     public function listAjax(Request $request){
 
         $customers          = Customer::getListByFilters($request);
-        $listTeams          = Team::where('tenancy_id', Auth::user()->tenancy_id)->get();
-        $listUsers          = User::where('tenancy_id', Auth::user()->tenancy_id)->get();
+
+
+        $listTeams          = []; //Team::where('tenancy_id', Auth::user()->tenancy_id)->get();
+        $listUsers          = [] ;//User::where('tenancy_id', Auth::user()->tenancy_id)->get();
+
+
+        foreach(Auth::user()->roles as $tenancy){
+
+            $listTeams[$tenancy->tenancy_id] = null;
+            $listUsers[$tenancy->tenancy_id] = null;
+            if(Auth::user()->can('manage-users', $tenancy->tenancy_id)){
+                $current_tenancy = Tenancy::find($tenancy->tenancy_id);
+                $listTeams[$tenancy->tenancy_id] = $current_tenancy->teams;
+                $listUsers[$tenancy->tenancy_id] = $current_tenancy->users;
+            }
+        }
+
 
         $listView = (request('setListView')?request('setListView'):'list-customers-default');
         $orderbyfield = "";

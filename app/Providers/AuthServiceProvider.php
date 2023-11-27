@@ -89,19 +89,21 @@ class AuthServiceProvider extends ServiceProvider
         Gate::define('store-customer', function($user){
             return true;
         });
-        Gate::define('customer-redirect', function($user){
+        Gate::define('customer-redirect', function($user, $customer){
 
 
-            if(Auth::user()->hasRole('Master')) {
+            $tenancy_id = $customer->tenancy_id;
+
+            if(Auth::user()->hasAnyRoles(['admin', 'manager'], $tenancy_id))
                 return true;
 
-            } elseif(Auth::user()->hasRole('Gerente')) {
-                return true;
-
-            } else {
-                return false;
-
+            if(Auth::user()->hasAnyRoles(['team_manager'], $tenancy_id)){
+                if(Auth::user()->teamId($tenancy_id) === $customer->team_id)
+                    return true;
             }
+
+
+            return false;
         });
 
 

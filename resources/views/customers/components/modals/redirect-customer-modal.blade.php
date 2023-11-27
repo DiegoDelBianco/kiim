@@ -16,7 +16,7 @@
               <label for="equipeRedirectClienteForm-{{ $customer->id }}" class="form-label">Equipe</label>
               <select class="form-control input-red-team" id="equipeRedirectClienteForm-{{ $customer->id }}" name="team_id">
                   <option value="" selected disable>Na fila</option>
-                  @foreach ($listTeams as $key => $value)
+                  @foreach ($listTeams[$customer->tenancy] as $key => $value)
                       <option value="{{ $value->id }}" >{{ $value->name }}</option>
                   @endforeach
               </select>
@@ -26,7 +26,7 @@
               <label for="equipeRedirectUserForm-{{ $customer->id }}" class="form-label">Usuário</label>
               <select class="form-control input-red-user" id="equipeRedirectUserForm-{{ $customer->id }}" name="user_id">
                   <option value="" selected disable>Na fila</option>
-                  @foreach ($listUsers as $user)
+                  @foreach ($listUsers[$customer->tenancy] as $user)
                       <option value="{{ $user->id }}">{{ $user->name }}</option>
                   @endforeach
               </select>
@@ -43,7 +43,7 @@
 
 <script>
 /*****  Script para o modal de criar customer  ******/
-$(document).ready(function() {  
+$(document).ready(function() {
     $('#equipeRedirectClienteForm-{{ $customer->id }}').on('change', function() {
         $('#equipeRedirectUserForm-{{ $customer->id }}').empty();
         var team_id = $(this).val();

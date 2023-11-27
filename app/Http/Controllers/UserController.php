@@ -42,10 +42,15 @@ class UserController extends Controller
 
     public function listByTeam(Request $request)
     {
-        $where[] = ['tenancy_id', '=', Auth::user()->tenancy_id];
-        if($request->team_id)  $where[] = ['team_id', "=", $request->team_id];
-        $users = User::where($where)->get();
-        return $users;
+        if(!$request->team_id) return [];
+
+        $team = Team::find($request->team_id);
+
+        if(!$team) return [];
+
+        $this->authorize('listByTeam', $team);
+
+        return $team->users;
     }
 
     /**

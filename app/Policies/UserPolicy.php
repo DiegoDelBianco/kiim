@@ -45,4 +45,5 @@ class UserPolicy
         //if(Auth::user()->hasRole('Assistente'))
         return false;
     }
+
 }

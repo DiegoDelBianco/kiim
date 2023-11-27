@@ -25,6 +25,24 @@ class TeamPolicy
         //
     }
 
+
+    public function listByTeam(User $user, Team $team): bool
+    {
+
+
+        $tenancy_id = $team->tenancy_id;
+
+        if($user->hasAnyRoles(['admin', 'manager'], $tenancy_id))
+            return true;
+
+        if($user->hasAnyRoles(['team_manager'], $tenancy_id)){
+            if($user->teamId($tenancy_id) === $team->id)
+                return true;
+        }
+
+        return false;
+    }
+
     /**
      * Determine whether the user can create models.
      */
@@ -40,14 +58,14 @@ class TeamPolicy
     {
         $tenancy_id = $team->tenancy_id;
 
-        if(Auth::user()->hasRole('admin', $tenancy_id))
+        if($user->hasRole('admin', $tenancy_id))
             return true;
 
-        if(Auth::user()->hasRole('manager', $tenancy_id))
+        if($user->hasRole('manager', $tenancy_id))
             return true;
 
-        if(Auth::user()->hasRole('team_manager', $tenancy_id))
-            return Auth::user()->team_id === $team_id;
+        if($user->hasRole('team_manager', $tenancy_id))
+            return $user->team_id === $team_id;
 
         return false;
     }

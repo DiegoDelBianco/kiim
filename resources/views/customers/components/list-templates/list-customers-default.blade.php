@@ -31,7 +31,7 @@
                 <td>{{ date( 'd/m/Y H:i' , strtotime($customer->created_at)) }}</td>
                 <td>
                     <a class="btn btn-primary" style="font-size: 12px" href="{{route('customers.show', $customer->id)}}"><i class="fas fa-eye"></i></a>
-                    @can('customer-redirect')
+                    @can('customer-redirect', $customer)
                     <button type="button" class="btn btn-info" style="font-size: 12px" data-toggle="modal" data-target="#modal-redirect-customer-{{ $customer->id }}"><i class="fas fa-recycle"></i></button>
                     @endcan
                     <button type="button" class="btn btn-danger" style="font-size: 12px" data-toggle="modal" data-target="#modal-delete-customer-{{ $customer->id }}"><i class="fas fa-trash"></i></button>
