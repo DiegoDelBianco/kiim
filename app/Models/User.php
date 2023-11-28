@@ -180,6 +180,20 @@ class User extends Authenticatable
         return true;
     }
 
+    // update team
+    public function update_limit_cs_by_day($tenancy_id, $limit){
+        $rel = $this->roles()->where('tenancy_id', $tenancy_id)->first();
+
+        if(! $rel)
+            return false;
+
+
+        $rel->limit_cs_by_day = $limit;
+        $rel->save();
+
+        return true;
+    }
+
     public function getRoleName($tenancy_id){
 
         return $this->roles()->where('tenancy_id', $tenancy_id)->first()->showName();;

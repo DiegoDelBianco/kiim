@@ -282,7 +282,10 @@ class Customer extends Model
                 AND tenancy_id = '.Auth::user()->tenancy_id,
                 ['user_id' => $user->id, 'team_id' => $user->team_id]);
 */
-            $list = Customer::baseQueryUserQueue();
+
+            $total_leads = 0;
+
+            $list = Customer::baseQueryUserQueue(true);
 
             $list->where(function($query) use ($user){
                 $query->where([['customers.n_customer_service','>', 1]])
@@ -292,8 +295,52 @@ class Customer extends Model
                     });
             });
 
+            $result = $list->get();
 
-            return $list->count('*');
+            // Obtem o total de leads atendidos hoje por tenancy
+            $count_by_tenancies = CustomerService::myCsByTenancy();
+
+
+            foreach(Auth::user()->roles as $tenancy){
+
+                $limit_by_day               = $tenancy->limit_cs_by_day;
+                $count_cs                   = 0;
+                $count_tenancy_leads        = 0;
+
+
+                // Obtem a quantidade de leads a serem atendidos para a tenancy atual do loop
+                foreach($result as $count_by_tenancy){
+
+                    if($count_by_tenancy->tenancy_id == $tenancy->tenancy_id){
+                        $count_tenancy_leads = $count_by_tenancy->count;
+                    }
+                }
+
+                // Caso não tenha limitação soma o total de leads do tenancy e continua
+                if(!$limit_by_day){
+                    $total_leads += $count_tenancy_leads;
+                    continue;
+                }
+
+                // obtem contagem de atedimentos para a tenancy atual do loop
+                foreach($count_by_tenancies as $count_by_tenancy){
+                    if($count_by_tenancy->tenancy_id == $tenancy->tenancy_id){
+                        $count_cs = $count_by_tenancy->count;
+                    }
+                }
+
+                $current_limit = $limit_by_day - $count_cs;
+
+                // Caso o limite de atendimentos do dia seja maior que o total de leads, soma o total de leads
+                if($current_limit < $count_tenancy_leads)
+                    $total_leads += $current_limit;
+                else
+                    $total_leads += $count_tenancy_leads;
+            }
+
+
+            return $total_leads;
+            //return $list->count('*');
     }
 
     public static function countQueueByUser($user = false){
@@ -308,14 +355,58 @@ class Customer extends Model
                 AND tenancy_id = '.Auth::user()->tenancy_id,
                 ['user_id' => $user->id, 'team_id' => $user->team_id]);
 */
+        $total_leads = 0;
 
-        $list = Customer::baseQueryUserQueue();
+        $list = Customer::baseQueryUserQueue(true);
 
         $list->where('n_customer_service', 0)
             ->where('opened', 2);
 
+        $result = $list->get();
 
-        return $list->count('*');
+        // Obtem o total de leads atendidos hoje por tenancy
+        $count_by_tenancies = CustomerService::myCsByTenancy();
+
+
+        foreach(Auth::user()->roles as $tenancy){
+
+            $limit_by_day               = $tenancy->limit_cs_by_day;
+            $count_cs                   = 0;
+            $count_tenancy_leads        = 0;
+
+
+            // Obtem a quantidade de leads a serem atendidos para a tenancy atual do loop
+            foreach($result as $count_by_tenancy){
+
+                if($count_by_tenancy->tenancy_id == $tenancy->tenancy_id){
+                    $count_tenancy_leads = $count_by_tenancy->count;
+                }
+            }
+
+            // Caso não tenha limitação soma o total de leads do tenancy e continua
+            if(!$limit_by_day){
+                $total_leads += $count_tenancy_leads;
+                continue;
+            }
+
+            // obtem contagem de atedimentos para a tenancy atual do loop
+            foreach($count_by_tenancies as $count_by_tenancy){
+                if($count_by_tenancy->tenancy_id == $tenancy->tenancy_id){
+                    $count_cs = $count_by_tenancy->count;
+                }
+            }
+
+            $current_limit = $limit_by_day - $count_cs;
+
+            // Caso o limite de atendimentos do dia seja maior que o total de leads, soma o total de leads
+            if($current_limit < $count_tenancy_leads)
+                $total_leads += $current_limit;
+            else
+                $total_leads += $count_tenancy_leads;
+        }
+
+
+        return $total_leads;
     }
 
     // Direciona o custmer para um novo usuario
@@ -460,18 +551,51 @@ class Customer extends Model
         return $customers;
     }
 
-    public static function baseQueryUserQueue(){
+
+
+    public static function baseQueryUserQueue($count = false){
+
+
+        // Obtem lista de atendimentos de hoje do usuario por tenancy
+        //select count(*), tenancy_id from  customer_services where created_at > ?today AND user_id = ?  group by tenancy_id;
 
         $tenancy_field = ('tenancy_id');
 
         $tenancies = [];
         $teams = [];
-        foreach(Auth::user()->roles as $tenancy){
-            $tenancies[] = $tenancy->tenancy_id;
-            $teams[] = Auth::user()->teamId($tenancy->tenancy_id);
+
+        if(!$count){
+            $count_by_tenancies = CustomerService::myCsByTenancy();
+
+            foreach(Auth::user()->roles as $tenancy){
+
+                $limit_by_day   = $tenancy->limit_cs_by_day;
+                $count_cs       = 0;
+
+                // obtem contagem de atedimentos do dia pela variavel count_by_tenancies
+                foreach($count_by_tenancies as $count_by_tenancy){
+                    if($count_by_tenancy->tenancy_id == $tenancy->tenancy_id){
+                        $count_cs = $count_by_tenancy->count;
+                    }
+                }
+
+                // caso não tenha atingido o limite da empresa, usa ela na query
+                if($limit_by_day AND $count_cs < $limit_by_day){
+                    $tenancies[] = $tenancy->tenancy_id;
+                    $teams[] = Auth::user()->teamId($tenancy->tenancy_id);
+                }
+            }
+        }else{
+
+            foreach(Auth::user()->roles as $tenancy){
+
+                $tenancies[] = $tenancy->tenancy_id;
+                $teams[] = Auth::user()->teamId($tenancy->tenancy_id);
+
+            }
         }
 
-        $customers = Customer::where('opened', '2');
+        $customers = $count ? DB::table('customers')->where('opened', '2') : Customer::where('opened', '2');
         $customers->where([['stage_id', '<' , '6']]);
 
         $customers->where(function($query) use ($tenancies, $teams, $tenancy_field){
@@ -493,6 +617,11 @@ class Customer extends Model
             });
 
         });
+
+        if($count){
+            $customers->select(DB::raw('count(*) as count, tenancy_id'));
+            $customers->groupBy('tenancy_id');
+        }
 
         return $customers;
     }

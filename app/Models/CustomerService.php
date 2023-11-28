@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class CustomerService extends Model
 {
@@ -260,6 +261,20 @@ class CustomerService extends Model
                 ->where('date','<',date('Y-m-d'))->count();
 
         return false;
+    }
+
+
+    // lista a quantidade de atendimentos feitos hoje por tenancy para o usuario logado
+    public static function myCsByTenancy(){
+
+        $count_by_tenancies = DB::table('customer_services')
+            ->select(DB::raw('count(*) as count, tenancy_id'))
+            ->where('created_at', '>', date('Y-m-d 00:00:00'))
+            ->where('user_id', Auth::user()->id)
+            ->groupBy('tenancy_id')
+            ->get();
+
+        return $count_by_tenancies;
     }
 
 

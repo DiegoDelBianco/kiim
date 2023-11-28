@@ -66,6 +66,14 @@
                 @elseif(Auth::user()->hasRole('team_manager', $tenancy->id))
                     <input type="hidden" name="equipeEditUser" value="{{ Auth::user()->team_id }}">
                 @endif
+                <div class="form-group row mt-3">
+                    <label for="email" class="col-md-2 col-form-label text-md-right">Limite de atendimentos diário</label>
+                    <div class="col-md-6">
+                        <input value="{{$rel->limit_cs_by_day}}" name="limitCsByDayEditUser" id="limitCsByDayEditUser" type="number" class="form-control">
+                        <p><small>Deixe vázio ou com valor 0 para definir como ilimitado</small></p>
+                    </div>
+                </div>
+
                 <div class="modal-footer mb-4">
                     <a href="{{route('users')}}" type="button" class="btn btn-default">Cancelar</a>
                     <button type="submit" class="btn btn-success">Salvar</button>

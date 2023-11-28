@@ -195,11 +195,14 @@ class UserController extends Controller
         $roles = RoleUser::get_roles_list();
         $teams = $tenancy->teams;
 
+        $rel = $user->roles()->where('tenancy_id', $tenancy->id)->first();
+
         return view('users.edit-user', [
             'user' => $user,
             'tenancy' => $tenancy,
             'roles' => $roles,
-            'teams' => $teams
+            'teams' => $teams,
+            'rel'   => $rel,
         ]);
     }
 
@@ -251,7 +254,10 @@ class UserController extends Controller
 
         //$user->name = $request->name;
         //$user->email = $request->email;
-        $user->team_id = $request->equipeEditUser;
+
+        //$user->team_id = $request->equipeEditUser;
+        //limit_cs_by_day
+        $user->update_limit_cs_by_day($tenancy->id, $request->limitCsByDayEditUser);
         $user->update_team($tenancy->id, $request->equipeEditUser);
 
         // $user->websites()->sync($request->websites);
