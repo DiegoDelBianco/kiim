@@ -1,6 +1,13 @@
 Modificações a serem feitas
 
-- empresa poder limitar a quantidade de leads que um corretor pode puxar por dia
+
+- Inserir leads via csv ou na mão, direto como remarketing
+
+- Exibir campo limitação na listagem de usuarios (0 ou null mostrar como "ilimitado")
+
+- Reestruturar visualização de lead no atendimento
+
+- (FEITO) empresa poder limitar a quantidade de leads que um corretor pode puxar por dia
 
 - criar botão de whats para entrar em contato com lead
 
