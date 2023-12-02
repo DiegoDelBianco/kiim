@@ -250,7 +250,7 @@ class Customer extends Model
                                             stage_id <> 10 AND
                                             stage_id <> 4 AND
                                             user_id = :user_id AND
-                                            (n_customer_service > 1 OR (n_customer_service = 1 AND opened = 2))
+                                            new = false
                                             AND tenancy_id = '.Auth::user()->tenancy_id.'
                                         LIMIT :limit
                                         OFFSET :offset',
@@ -288,11 +288,7 @@ class Customer extends Model
             $list = Customer::baseQueryUserQueue(true);
 
             $list->where(function($query) use ($user){
-                $query->where([['customers.n_customer_service','>', 1]])
-                    ->orWhere(function($query) use ($user){
-                        $query->where('n_customer_service', 1 )
-                            ->where('opened', 2);
-                    });
+                $query->where([['customers.new','=', false]]);
             });
 
             $result = $list->get();
@@ -418,7 +414,7 @@ class Customer extends Model
         // Verifica se foi passada alguma informação
         if($user == false and $team == false ){
             // Define se é remarketing
-            $remarketing = ($this->n_customer_service >= 1);
+            $remarketing = (!$this->new);
 
             // Fazer o remanejamento
             $this->team_id = NULL;
@@ -451,7 +447,7 @@ class Customer extends Model
         if( $user == false ) return true;
 
         // Define se é remarketing
-        $remarketing = ($this->n_customer_service >= 1);
+        $remarketing = (!$this->new);
 
         // Fazer o remanejamento
         $this->user_id = $user->id;
@@ -474,7 +470,7 @@ class Customer extends Model
         if(!$this->canRedirect()) return false;
 
         // Define se é remarketing
-        $remarketing = ($this->n_customer_service >= 1);
+        $remarketing = (!$this->new);
 
         // Fazer o remanejamento
         $this->team_id = ($team?$team->id:NULL);
@@ -559,7 +555,7 @@ class Customer extends Model
         // Obtem lista de atendimentos de hoje do usuario por tenancy
         //select count(*), tenancy_id from  customer_services where created_at > ?today AND user_id = ?  group by tenancy_id;
 
-        $tenancy_field = ('tenancy_id');
+        $tenancy_field = 'tenancy_id';
 
         $tenancies = [];
         $teams = [];
@@ -580,14 +576,14 @@ class Customer extends Model
                 }
 
                 // caso não tenha atingido o limite da empresa, usa ela na query
-                if($limit_by_day AND $count_cs < $limit_by_day){
+                if(($limit_by_day AND $count_cs < $limit_by_day) OR !$limit_by_day){
                     $tenancies[] = $tenancy->tenancy_id;
                     $teams[] = Auth::user()->teamId($tenancy->tenancy_id);
                 }
             }
         }else{
-
             foreach(Auth::user()->roles as $tenancy){
+
 
                 $tenancies[] = $tenancy->tenancy_id;
                 $teams[] = Auth::user()->teamId($tenancy->tenancy_id);

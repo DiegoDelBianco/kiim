@@ -97,9 +97,10 @@ class CustomerCsvImportController extends Controller
         $head = fgetcsv($file, 0, ';');
         $count = 0;
         $list_fields = CustomerCsvImport::getFieldsToSave();
+        $novo = $request->importas == 'novo' ? true : false;
         while (($row = fgetcsv($file, 0, ';')) !== false) {
             $count++;
-            $fields = $request->except('_token');
+            $fields = $request->except(['_token', 'importas']);
             $customer = new Customer();
 
             foreach ($fields as $key => $column_name) {
@@ -112,6 +113,11 @@ class CustomerCsvImportController extends Controller
                 $callfunc = 'prepare_'.$list_fields[$column_name]['func'];
                 $customer = CustomerCsvImport::$callfunc($value, $column_name, $customer);
             }
+
+            $customer->opened = $novo ? 2 : 1;
+            $customer->stage_id = $novo ? 1 : 4;
+            $customer->new = $novo;
+
             $customer->source = 'CSV';
             $customer->customer_csv_import_id = $import->id;
             //$customer->team_id = $row[$request->team_id];

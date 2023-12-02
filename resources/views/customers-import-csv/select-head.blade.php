@@ -49,6 +49,20 @@
             <form action="{{route('customers.importCsv.finalize', $import->id)}}" method="POST">
                 @csrf
                 @php $count = 0; @endphp
+
+
+                <div class="input-group mb-3 col-md-8 pb-3">
+                    <div class="input-group-prepend">
+                        <label class="input-group-text" for="inputGroupSelect01">Importar como: </label>
+                    </div>
+
+                    <select name="importas" class="custom-select" id="importas">
+                        <option value="novo">Lead Novo</option>
+                        <option value="remaketing">Lead para remarketing</option>
+                    </select>
+
+                </div>
+
                 @foreach($head as $field)
                     <!-- input group to select a column from customers reference field  -->
                     <div class="input-group mb-3 col-md-8 pb-3">

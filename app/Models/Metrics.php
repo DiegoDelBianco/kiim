@@ -37,7 +37,7 @@ class Metrics extends Model
     /*
      * Todos os leads do sistema
      *
-     */ 
+     */
     public static function allLeads($team_id = false, $assistent_id = false, $periodo = 1, $ano = 0, $mes = 0, $dataini = 0, $dataend = 0){
         $return = self::get_metrics("query_allLeads", $team_id, $assistent_id, $periodo, $ano, $mes, $dataini, $dataend);
         return $return;
@@ -59,7 +59,7 @@ class Metrics extends Model
      *      - 9  Remarketing
      *      - 10 Remanejado
      * 3175 60
-     */ 
+     */
     public static function newLeads($team_id = false, $assistent_id = false, $periodo = 1, $ano = 0, $mes = 0, $dataini = 0, $dataend = 0){
         $return = self::get_metrics("query_newLeads", $team_id, $assistent_id, $periodo, $ano, $mes, $dataini, $dataend);
         return $return;
@@ -67,7 +67,7 @@ class Metrics extends Model
 
     // Função que gera a query de pesquisa para NewLeads
     private static function query_newLeads($assistent_id, $team_id, $minOperator){
-        $where      = " AND n_customer_service < 2 AND stage_id <> 4 AND stage_id <> 5 ";
+        $where      = " AND new = true AND stage_id <> 4 AND stage_id <> 5 ";
         return self::default_query($where, $assistent_id, $team_id, $minOperator);
     }
 
@@ -84,7 +84,7 @@ class Metrics extends Model
      *      - 8 Cobrança
      *
      * CORREÇÃO 02/03/2023: Passou-se a pegar a data do contrato e não a data de criação do cliente
-    */ 
+    */
     public static function newContracts($team_id = false, $assistent_id = false, $periodo = 1, $ano = 0, $mes = 0, $dataini = 0, $dataend = 0){
         $return = self::get_metrics("query_newContracts", $team_id, $assistent_id, $periodo, $ano, $mes, $dataini, $dataend);
         return $return;
@@ -92,7 +92,7 @@ class Metrics extends Model
 
     // Função que gera a query de pesquisa para newContracts
     private static function query_newContracts($assistent_id, $team_id, $minOperator){
-        
+
         $where      = " AND (customers.stage_id = 7 OR customers.stage_id = 6 OR customers.stage_id = 9 OR customers.stage_id = 8) ";
         return self::default_query_contracts($where, $assistent_id, $team_id, $minOperator);
     }
@@ -111,7 +111,7 @@ class Metrics extends Model
      *      - 8 Cobrança
      *
      * CORREÇÃO 02/03/2023: Passou-se a pegar a data do contrato e não a data de criação do cliente
-    */ 
+    */
     public static function newContractsNoRemarketing($team_id = false, $assistent_id = false, $periodo = 1, $ano = 0, $mes = 0, $dataini = 0, $dataend = 0){
         $return = self::get_metrics("query_newContractsNoRemarketing", $team_id, $assistent_id, $periodo, $ano, $mes, $dataini, $dataend);
         return $return;
@@ -119,7 +119,7 @@ class Metrics extends Model
 
     // Função que gera a query de pesquisa para newContractsNoRemarketing
     private static function query_newContractsNoRemarketing($assistent_id, $team_id, $minOperator){
-        $where      = " AND customers.n_customer_service < 2 AND (customers.stage_id = 7 OR customers.stage_id = 6 OR customers.stage_id = 9 OR customers.stage_id = 8) ";
+        $where      = " AND customers.new = true AND (customers.stage_id = 7 OR customers.stage_id = 6 OR customers.stage_id = 9 OR customers.stage_id = 8) ";
         return self::default_query_contracts($where, $assistent_id, $team_id, $minOperator);
     }
 
@@ -135,7 +135,7 @@ class Metrics extends Model
      *      - 5 Vendido
      *      - 8 Cobrança
      *
-    */ 
+    */
     public static function totals($team_id = false, $assistent_id = false, $periodo = 1, $ano = 0, $mes = 0, $dataini = 0, $dataend = 0){
         $return = self::get_metrics("query_totals", $team_id, $assistent_id, $periodo, $ano, $mes, $dataini, $dataend);
         return $return;
@@ -156,10 +156,10 @@ class Metrics extends Model
             $args['team_id'] = $team_id;
         }
 
-       /* $select = DB::select("SELECT sum(customers.credito) AS count FROM customers 
+       /* $select = DB::select("SELECT sum(customers.credito) AS count FROM customers
                 INNER JOIN contracts ON contracts.customer_id = customers.customer_id
                 WHERE contracts.created_at LIKE :minOperator ".$where, $args);
-        
+
         $leads = $select[0]->count;*/
         $leads = 0;
 
@@ -176,7 +176,7 @@ class Metrics extends Model
      *      - 9  Remarketing
      *      - 10 Remanejado
      *
-    */ 
+    */
     public static function remarketing($team_id = false, $assistent_id = false, $periodo = 1, $ano = 0, $mes = 0, $dataini = 0, $dataend = 0){
         $return = self::get_metrics("query_remarketing", $team_id, $assistent_id, $periodo, $ano, $mes, $dataini, $dataend);
         return $return;
@@ -184,7 +184,7 @@ class Metrics extends Model
 
     // Função que gera a query de pesquisa para remarketing
     private static function query_remarketing($assistent_id, $team_id, $minOperator){
-        $where      = " AND (n_customer_service > 1 OR stage_id = 4 OR stage_id = 5) ";
+        $where      = " AND (new = false OR stage_id = 4 OR stage_id = 5) ";
         return self::default_query($where, $assistent_id, $team_id, $minOperator);
     }
 
@@ -202,15 +202,15 @@ class Metrics extends Model
      *      - 8 Cobrança
      *
      * CORREÇÃO 02/03/2023: Passou-se a pegar a data do contrato e não a data de criação do cliente
-    */ 
+    */
     public static function vendasRemarketing($team_id = false, $assistent_id = false, $periodo = 1, $ano = 0, $mes = 0, $dataini = 0, $dataend = 0){
         $return = self::get_metrics("query_vendasRemarketing", $team_id, $assistent_id, $periodo, $ano, $mes, $dataini, $dataend);
         return $return;
     }
 
     // Função que gera a query de pesquisa para vendasRemarketing
-    private static function query_vendasRemarketing($assistent_id, $team_id, $minOperator){        
-        $where      = " AND (customers.n_customer_service > 1) AND (customers.stage_id = 7 OR customers.stage_id = 6 OR customers.stage_id = 9 OR customers.stage_id = 8) ";
+    private static function query_vendasRemarketing($assistent_id, $team_id, $minOperator){
+        $where      = " AND (customers.new = false) AND (customers.stage_id = 7 OR customers.stage_id = 6 OR customers.stage_id = 9 OR customers.stage_id = 8) ";
         return self::default_query_contracts($where, $assistent_id, $team_id, $minOperator);
     }
 
@@ -218,7 +218,7 @@ class Metrics extends Model
     /*****************************************/
 
     private static function default_query($where, $assistent_id, $team_id, $minOperator){
-        
+
         $args       = ['minOperator' => $minOperator];
         $where  = "";
         if($assistent_id) {
@@ -231,7 +231,7 @@ class Metrics extends Model
             $args['team_id'] = $team_id;
         }
 
-        $select = DB::select("SELECT count(*) AS count FROM customers 
+        $select = DB::select("SELECT count(*) AS count FROM customers
                 WHERE created_at LIKE :minOperator ".$where." AND customers.tenancy_id = ".Auth::user()->tenancy_id, $args);
 
         $leads = $select[0]->count;
@@ -243,7 +243,7 @@ class Metrics extends Model
     /*****************************************/
 
     private static function default_query_contracts($where, $assistent_id, $team_id, $minOperator){
-        
+
         $args       = ['minOperator' => $minOperator];
         if($assistent_id) {
             $where .= " AND customers.user_id = :assistent_id";
@@ -255,7 +255,7 @@ class Metrics extends Model
             $args['team_id'] = $team_id;
         }
 
-        $select = DB::select("SELECT count(*) AS count FROM customers 
+        $select = DB::select("SELECT count(*) AS count FROM customers
                 WHERE customers.buy_date LIKE :minOperator ".$where." AND customers.tenancy_id = ".Auth::user()->tenancy_id, $args);
 
         $leads = $select[0]->count;
@@ -265,7 +265,7 @@ class Metrics extends Model
 
     // Gera as métricas
     public static function get_metrics($function_query, $team_id = false, $assistent_id = false, $periodo = 1, $ano = 0, $mes = 0, $dataini = 0, $dataend = 0){
-        
+
         $return = [];
         $month = ($mes==0?date('m'):$mes);
         $year = ($ano==0?date('o'):$ano);
@@ -276,10 +276,10 @@ class Metrics extends Model
          *      4 - "Personalizado"
          */
         if($periodo == 2 || $periodo == 4){
-            
+
             // Último dia do mês
             $limit_days = cal_days_in_month(CAL_GREGORIAN, $month, $year);
-            
+
             // Define datas iniciais e finais caso o periodo seja um mês selecinado
             // Caso o periodo seja personalizado ele ja vem com as dadas iniciais e finais configuradas por parametro
             if($periodo == 2){
@@ -288,8 +288,8 @@ class Metrics extends Model
             }
 
             // Loop de pesquisa por dia
-            for ($i=date('o-m-d', strtotime('+0 days', strtotime($dataend)));str_replace("-", "", $i) >=  str_replace("-", "", $dataini)  ; $i = self::ontem($i)) { 
-                
+            for ($i=date('o-m-d', strtotime('+0 days', strtotime($dataend)));str_replace("-", "", $i) >=  str_replace("-", "", $dataini)  ; $i = self::ontem($i)) {
+
                 //Define os dados da data atual a ser pesquisada
                 $explode = explode('-', $i);
                 $month = $explode[1];
@@ -326,7 +326,7 @@ class Metrics extends Model
             if($periodo == 3) $month = 12;
 
             // Loop de pesquisa por 12 meses em ordem decrescente
-            for ($i=12; $i > 0 ; $i--) { 
+            for ($i=12; $i > 0 ; $i--) {
 
                 // Nome do mês para ser usado na array de retorno
                 $month_name = date('M', mktime(0, 0, 0, $month, 10));

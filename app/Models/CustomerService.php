@@ -90,15 +90,15 @@ class CustomerService extends Model
         $nextCustomer = Customer::baseQueryUserQueue(); //Customer::where('tenancy_id', Auth::user()->tenancy_id);
 
         if($remarketing){
-            $nextCustomer->where('n_customer_service', '>=', 1);
+            $nextCustomer->where('new', '=', false);
         }else{
-            $nextCustomer->where('n_customer_service', '=', 0);
+            $nextCustomer->where('new', '=', true);
         }
 
         $nextCustomer = $nextCustomer->orderBy('created_at', 'asc')->first();
 
-        $this->nextCustomer         = $remarketing?false:$nextCustomer;
-        $this->next_remarketing     = $remarketing?$nextCustomer:false;
+        $this->nextCustomer         = $nextCustomer; //$remarketing?false:$nextCustomer;
+        $this->next_remarketing     = $remarketing; //?$nextCustomer:false;
 
         return $nextCustomer;
     }
@@ -197,6 +197,7 @@ class CustomerService extends Model
         }
 
         $this->customer->stage_id = $stage;
+        $this->customer->new = false;
         $this->customer->save();
 
         return true;
