@@ -17,10 +17,9 @@
         @foreach(\App\Models\Extension::getHomeAvaliable()  as $extension)
             @include($extension['include'])
         @endforeach
-
+        <!--
         @can('menu-config')
         <div class="col-md-4">
-            <!-- A boostrap card to call tenancies route -->
             <div class="card" style="width: 100%;">
                 <div class="card-body">
                     <h5 class="card-title float-none pb-2"> <i class="fas fa-fw fa-cogs "></i> Configurações</h5>
@@ -30,10 +29,10 @@
                 </div>
             </div>
         </div>
-        @endcan
+        @endcan -->
+        <!--
         @can('menu-customer-list')
         <div class="col-md-4">
-            <!-- A boostrap card to call tenancies route -->
             <div class="card" style="width: 100%;">
                 <div class="card-body">
                     <h5 class="card-title float-none pb-2"> <i class="fas fa-fw fa-address-book "></i> Leads</h5>
@@ -43,10 +42,9 @@
                 </div>
             </div>
         </div>
-        @endcan
+        @endcan -->
         @can('menu-customer-service')
         <div class="col-md-4">
-            <!-- A boostrap card to call tenancies route -->
             <div class="card" style="width: 100%;">
                 <div class="card-body">
                     <h5 class="card-title float-none pb-2"> <i class="fas fa-fw fa-headphones "></i> Atendimento</h5>
@@ -59,7 +57,6 @@
         @endcan
         @can('menu-customer-service-remarketing')
         <div class="col-md-4">
-            <!-- A boostrap card to call tenancies route -->
             <div class="card" style="width: 100%;">
                 <div class="card-body">
                     <h5 class="card-title float-none pb-2"> <i class="fas fa-fw fa-recycle "></i> Leads Retorno</h5>
@@ -70,9 +67,9 @@
             </div>
         </div>
         @endcan
+        <!--
         @can('menu-metrics')
         <div class="col-md-4">
-            <!-- A boostrap card to call tenancies route -->
             <div class="card" style="width: 100%;">
                 <div class="card-body">
                     <h5 class="card-title float-none pb-2"> <i class="fas fa-fw fa-chart-bar "></i> Métricas</h5>
@@ -84,7 +81,6 @@
         </div>
         @endcan
         <div class="col-md-4">
-            <!-- A boostrap card to call tenancies route -->
             <div class="card" style="width: 100%;">
                 <div class="card-body">
                     <h5 class="card-title float-none pb-2"> <i class="fas fa-fw fa-user-circle "></i> Meus dados</h5>
@@ -94,6 +90,7 @@
                 </div>
             </div>
         </div>
+-->
     </div>
 @stop
 
