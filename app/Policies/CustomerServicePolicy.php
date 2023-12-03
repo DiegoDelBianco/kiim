@@ -46,8 +46,11 @@ class CustomerServicePolicy
      */
     public function delete(User $user, CustomerService $customerService): bool
     {
-        if(Auth::user()->tenancy_id != $customerService->tenancy_id) return false;
+        if(Auth::user()->tenancy_id != $customerService->tenancy_id
+            AND $customerService->user_id != Auth::user()->id ) return false;
 
+        return true;
+/*
         if(Auth::user()->hasRole('Master')) {
             return true;
 
@@ -57,7 +60,7 @@ class CustomerServicePolicy
         } else {
             return Auth::user()->id === $customerService->customer->user_id;
 
-        }
+        }*/
     }
 
     /**
