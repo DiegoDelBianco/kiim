@@ -64,8 +64,8 @@ class CustomerController extends Controller
 
         foreach(Auth::user()->roles as $tenancy){
 
-            $listTeams[$tenancy->tenancy_id] = null;
-            $listUsers[$tenancy->tenancy_id] = null;
+            $listTeams[$tenancy->tenancy_id] = [];
+            $listUsers[$tenancy->tenancy_id] = [];
             if(Auth::user()->can('manage-users', $tenancy->tenancy_id)){
                 $current_tenancy = Tenancy::find($tenancy->tenancy_id);
                 $listTeams[$tenancy->tenancy_id] = $current_tenancy->teams;
