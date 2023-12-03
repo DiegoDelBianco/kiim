@@ -52,7 +52,10 @@ class CustomerPolicy
      */
     public function update(User $user, Customer $customer): bool
     {
-        if(Auth::user()->tenancy_id != $customer->tenancy_id) return false;
+        if(Auth::user()->tenancy_id != $customer->tenancy_id
+            AND $customer->user_id != Auth::user()->id ) return false;
+
+        return true;
 
         if(Auth::user()->hasRole('Master')) {
             return true;
