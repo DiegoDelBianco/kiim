@@ -224,11 +224,12 @@ $(document).ready(function() {
 
         // foreach in listTeams var
         for (var key in listTeams) {
-            console.log(listTeams[key][0]['tenancy_id'] );
-            if(listTeams[key][0]['tenancy_id'] == tenancy_id){
-                for(var key2 in listTeams[key]) {
-                    console.log(listTeams[key][key2]['name'] );
-                    $('select[name="team_id"]').append('<option value="'+ listTeams[key][key2]['id'] +'">'+ listTeams[key][key2]['name'] +'</option>');
+            if(listTeams[key][0] !== undefined ){
+                if(listTeams[key][0]['tenancy_id'] == tenancy_id){
+                    for(var key2 in listTeams[key]) {
+                        console.log(listTeams[key][key2]['name'] );
+                        $('select[name="team_id"]').append('<option value="'+ listTeams[key][key2]['id'] +'">'+ listTeams[key][key2]['name'] +'</option>');
+                    }
                 }
             }
         }
