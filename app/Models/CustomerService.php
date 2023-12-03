@@ -115,7 +115,7 @@ class CustomerService extends Model
         $timeline->newTimeline($this->nextCustomer, "O usuário #".Auth::user()->id." ".Auth::user()->name." iniciou o atendimento ".($negociation?"(Em modo de negociação)":""), 5);
 
         //Salva o novo atendimento
-        $this->tenancy_id = Auth::user()->tenancy_id;
+        $this->tenancy_id = $this->nextCustomer->tenancy_id;
         $this->remarketing = $this->next_remarketing;
         $this->customer_id = $this->nextCustomer->id;
         $this->user_id = Auth::user()->id;
