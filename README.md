@@ -1,13 +1,25 @@
 Modificações a serem feitas
 
 
-- Inserir leads via csv ou na mão, direto como remarketing
+- Visualização do termometro para quem deve ver
+- Obtensão de métricas para visualização do termometro
+- Cadastro e administração de metas pelo admin
+- Visualização dos premidos o mes passado no admin
+- Visualização das extensões ativas no menu
+- Comando para fechamento de mes
+- Configuração de agendamento para fechamento de mes
+- Chamada de extensões no fechamento de mes
+- Função de fechamento
+
+
+
+- [FEITO] Inserir leads via csv ou na mão, direto como remarketing
 
 - Exibir campo limitação na listagem de usuarios (0 ou null mostrar como "ilimitado")
 
 - Reestruturar visualização de lead no atendimento
 
-- (FEITO) empresa poder limitar a quantidade de leads que um corretor pode puxar por dia
+- [FEITO] empresa poder limitar a quantidade de leads que um corretor pode puxar por dia
 
 - criar botão de whats para entrar em contato com lead
 

@@ -21,6 +21,7 @@ use App\Http\Controllers\MetricsController;
 use App\Http\Controllers\WhatsappNotificationController;
 use App\Http\Controllers\CustomerCsvImportController;
 use App\Http\Controllers\ApiController;
+use App\Http\Controllers\ExtensionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -158,12 +159,10 @@ Route::middleware('auth')->group(function () {
 
     // Configurações de API
     Route::get('/facebook-config', [ApiController::class, 'facebookConfig'])->name('configApi.facebook');
-
 });
 
 Route::get('/pub/leadpage/{website}', [WebsiteController::class, 'show'])->name('public.websites');
 
 
-
-
 require __DIR__.'/auth.php';
+require __DIR__.'/extensions/all.php';

@@ -380,6 +380,11 @@ return [
             'icon' => 'fas fa-fw fa-user',
             'can'  => ['menu-users-list'],
         ],
+        [
+            'text' => 'Extensões',
+            'route'  => 'extensions',
+            'icon' => 'fas fa-fw fa-bullseye',
+        ],
 //        [
 //        'text' => 'Imóveis',
 //            'route'  => 'products',
@@ -610,6 +615,11 @@ return [
                     'type' => 'js',
                     'asset' => true,
                     'location' => '/js/dashboard/app.js',
+                ],
+                [
+                    'type' => 'js',
+                    'asset' => false,
+                    'location' => 'https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js',
                 ],
             ],
         ],

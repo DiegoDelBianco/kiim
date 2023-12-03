@@ -24,3 +24,8 @@ function updatMenuLabel(){
     });
 
 }
+
+// usa o jquery mask para formatar em R$ todos os inputs com class mask-money
+$(document).ready(function(){
+    $('.mask-money').mask('000.000,00', {reverse: true});
+});

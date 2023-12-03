@@ -13,6 +13,11 @@
         </div>
     </div>
     <div class="row">
+
+        @foreach(\App\Models\Extension::getHomeAvaliable()  as $extension)
+            @include($extension['include'])
+        @endforeach
+
         @can('menu-config')
         <div class="col-md-4">
             <!-- A boostrap card to call tenancies route -->

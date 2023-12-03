@@ -334,6 +334,7 @@ class Customer extends Model
                     $total_leads += $count_tenancy_leads;
             }
 
+            if($total_leads < 0) $total_leads = 0;
 
             return $total_leads;
             //return $list->count('*');
@@ -400,6 +401,8 @@ class Customer extends Model
             else
                 $total_leads += $count_tenancy_leads;
         }
+
+        if($total_leads < 0) $total_leads = 0;
 
 
         return $total_leads;
