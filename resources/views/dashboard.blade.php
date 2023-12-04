@@ -17,6 +17,70 @@
         @foreach(\App\Models\Extension::getHomeAvaliable()  as $extension)
             @include($extension['include'])
         @endforeach
+        <!--div class="col-md-6">
+            <div class="card" style="width: 100%;">
+                <div class="card-body">
+                    <h5 class="card-title float-none pb-2">Funil de vendas</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">Como vão seus leads</h6>
+                    <div id="triangle-container">
+                        <div id="triangle-4">
+
+                        </div>
+                        <div id="triangle-3">
+                            <p>3 Vendas</p>
+                        </div>
+                        <div id="triangle-2">
+                            <p>15 em negociação</p>
+                        </div>
+                        <div id="triangle-1">
+                            <p>150 Leads totais</p>
+                        </div>
+                    </div>
+                    <style>
+                        #triangle-container {
+                            width: 100%;
+                            position: relative;
+                        }
+
+                        #triangle-container div{
+                            margin: auto;
+                            display: flex;
+                            align-items: end;
+                            justify-content: center;
+                            transition: width 0.5s ease-in-out;
+                        }
+                        #triangle-container div p{
+                            text-align:center;
+                            color: white;
+                            font-weight: bold;
+                            font-size: 12px;
+                            padding-bottom: 5px;
+                        }
+
+                        #triangle-1 {
+                            width: 100%;
+                            height: 75px;
+                            background-color: #027C2B;
+                            clip-path: polygon(16.6% 0, 83.4% 0, 100% 100%, 0% 100%)
+                        }
+
+                        #triangle-2 {
+                            width: 66.7%;
+                            height: 75px;
+                            background-color: #0B9F3D;
+                            clip-path: polygon(25% 0, 75% 0, 100% 100%, 0% 100%);
+                        }
+
+                        #triangle-3 {
+                            width: 33.3%;
+                            height: 75px;
+                            background-color: #28B357;
+                            clip-path: polygon(50% 0, 50% 0, 100% 100%, 0% 100%);
+                        }
+                    </style>
+                </div>
+            </div>
+        </div-->
         <!--
         @can('menu-config')
         <div class="col-md-4">

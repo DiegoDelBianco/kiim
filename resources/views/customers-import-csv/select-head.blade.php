@@ -56,9 +56,11 @@
                         <label class="input-group-text" for="inputGroupSelect01">Importar como: </label>
                     </div>
 
-                    <select name="importas" class="custom-select" id="importas">
-                        <option value="novo">Lead Novo</option>
-                        <option value="remaketing">Lead para remarketing</option>
+                    <select name="stage_id" class="custom-select" id="importas">
+                        <option selected value="">Selecione</option>
+                        @foreach($stages as $stage)
+                            <option value="{{$stage->id}}">{{$stage->name}}</option>
+                        @endforeach
                     </select>
 
                 </div>

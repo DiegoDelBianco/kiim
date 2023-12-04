@@ -7,6 +7,7 @@ use App\Models\CustomerCsvImport;
 use App\Models\Customer;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Tenancy;
+use App\Models\Stage;
 
 class CustomerCsvImportController extends Controller
 {
@@ -82,7 +83,8 @@ class CustomerCsvImportController extends Controller
         $head = fgetcsv($file, 0, ';');
         fclose($file);
         $fields_to_save = CustomerCsvImport::getFieldsToSave();
-        return view('customers-import-csv/select-head', compact('import', 'head', 'fields_to_save'));
+        $stages = \App\Models\Stage::where('tenancy_id', $tenancy->id)->where('can_init', true)->get();
+        return view('customers-import-csv/select-head', compact('import', 'head', 'fields_to_save', 'stages'));
     }
 
     //finalize function
@@ -97,10 +99,17 @@ class CustomerCsvImportController extends Controller
         $head = fgetcsv($file, 0, ';');
         $count = 0;
         $list_fields = CustomerCsvImport::getFieldsToSave();
-        $novo = $request->importas == 'novo' ? true : false;
+        $stage = Stage::find($request->stage_id);
+
+        if(!$stage)
+            $stage = Stage::where('tenancy_id', $import->tenancy_id)->where('is_customer_default', true)->first();
+
+        if(!$stage)
+            return redirect()->back()->with('error', 'Não foi possível encontrar uma etapa para importar os leads');
+
         while (($row = fgetcsv($file, 0, ';')) !== false) {
             $count++;
-            $fields = $request->except(['_token', 'importas']);
+            $fields = $request->except(['_token', 'stage_id']);
             $customer = new Customer();
 
             foreach ($fields as $key => $column_name) {
@@ -114,9 +123,9 @@ class CustomerCsvImportController extends Controller
                 $customer = CustomerCsvImport::$callfunc($value, $column_name, $customer);
             }
 
-            $customer->opened = $novo ? 2 : 1;
-            $customer->stage_id = $novo ? 1 : 4;
-            $customer->new = $novo;
+            //$customer->opened = $novo ? 2 : 1;
+            $customer->stage_id = $stage->id;
+            $customer->new = $stage->is_new;
 
             $customer->source = 'CSV';
             $customer->customer_csv_import_id = $import->id;

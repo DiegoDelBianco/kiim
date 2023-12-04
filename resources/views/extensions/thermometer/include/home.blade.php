@@ -39,7 +39,7 @@ if($count_sell > $max_goal){
 //format percentage to 2 decimal places
 $percentage = number_format((float)$percentage, 2, '.', '');
 ?>
-<div class="col-md-8">
+<div class="col-md-6">
     <!-- A boostrap card to call tenancies route -->
     <div class="card" style="width: 100%;">
         <div class="card-body">
@@ -79,7 +79,7 @@ $percentage = number_format((float)$percentage, 2, '.', '');
                     @if(count($awards) >= 1)
                         <div class="row">
                             @foreach($awards as $award)
-                                <div class="col-md-3">
+                                <div class="col-md-4">
                                     <div class="card">
                                         <div class="card-header" style="font-size: 12px">
                                             {{strftime('%B', strtotime('-1 month',strtotime($award->created_at)))}}

@@ -3,7 +3,7 @@
 
             <div class="ficha_cliente">
                 <p><span>Nome: </span> {{ $customer->name!="" ? $customer->name : "Não informado" }} </p>
-                <p><span>Status: </span> {{ $customer->stage() }} | {{ !$customer->new ? "Retorno" : "Primeiro atendimento" }} ({{ $customer->customerService ? ( $customer->customerService->status == 1 ? "Atendimento Aberto": "Atendimento Finalizado"):"Não atendido" }})  </p>
+                <p><span>Status: </span> {{ $customer->stage->name }} | {{ !$customer->new ? "Retorno" : "Primeiro atendimento" }} ({{ $customer->customerService ? ( $customer->customerService->status == 1 ? "Atendimento Aberto": "Atendimento Finalizado"):"Não atendido" }})  </p>
                 <p><span>Cadastrado: </span> Dia {{ $customer->created_at != "" ? date( 'd/m/Y H:i' , strtotime($customer->created_at)):"Não informado" }} {{ isset($customer->website) ? "em " . $customer->website->name : "" }}</p>
                 <p><span>Empreendimento: </span> {{$customer->real_state_project}} </p>
                 <p><span>Produto: </span> {{ $customer->product ? $customer->product->title." | R$ ".$customer->product->sell_price : "Não informado" }} <button data-toggle="modal" data-target="#modal-show-product" type="button" class="btn btn-info" data-bs-toggle="dropdown" aria-expanded="false" style="padding-left: 6px;padding-right: 6px;margin-left: 10px;"> <i class="fas fa-eye"></i> </button>  </p>

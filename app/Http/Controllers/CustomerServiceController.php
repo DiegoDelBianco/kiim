@@ -29,7 +29,7 @@ class CustomerServiceController extends Controller
                 4 => ($customer->customer_service ? $customer->customer_service->countScheduling(4) : 0),
                 5 => ($customer->customer_service ? $customer->customer_service->countScheduling(5) : 0)
                 ];
-            $list_reason_finish =  CustomerService::listStatusFinish();
+            $list_reason_finish =  CustomerService::listStatusFinish($customer->tenancy_id);
         }
         return view('customers.show-customer-service', compact('customer', 'btn_end_customer_service', 'btn_start_customer_service', 'schedules', 'is_remarketing', 'list_reason_finish'));
     }
@@ -51,7 +51,7 @@ class CustomerServiceController extends Controller
                 4 => ($customer->customer_service ? $customer->customer_service->countScheduling(4) : 0),
                 5 => ($customer->customer_service ? $customer->customer_service->countScheduling(5) : 0)
                 ];
-            $list_reason_finish =  CustomerService::listStatusFinish();
+            $list_reason_finish =  CustomerService::listStatusFinish($customer->tenancy_id);
         }
         return view('customers.show-customer-service', compact('customer', 'btn_end_customer_service', 'btn_start_customer_service', 'schedules', 'is_remarketing', 'list_reason_finish'));
     }
@@ -121,19 +121,13 @@ class CustomerServiceController extends Controller
     public function destroy(Request $request, CustomerService $customer_service)
     {
         $this->authorize('delete', $customer_service);
-        
-        $customer_service->end($request->reason_finish, $request->description);
 
+        $reason_finish = \App\Models\ReasonFinish::find($request->reason_finish);
 
-        // Atualiza cliente em caso de venda
-        if($request->buy_date and ($request->reason_finish == 2)) 
-            $customer_service->customer->buy_date = $request->buy_date;
-        if($request->pay_date and ($request->reason_finish == 2)) 
-            $customer_service->customer->pay_date = $request->pay_date;
+        if(!$reason_finish)
+            return back()->with('error', 'Motivo não encontrado');
 
-        if(($request->buy_date or $request->pay_date) and ($request->reason_finish == 2))
-            $customer_service->customer->save();
-        
+        $customer_service->end($reason_finish, $request->description);
 
         return back()->with('success','Atendimento finalizado, agora você já pode atender outro lead!');
     }

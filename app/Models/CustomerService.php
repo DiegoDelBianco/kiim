@@ -40,10 +40,23 @@ class CustomerService extends Model
     public $next_remarketing = false;
 
     // Retorna a array de nomes de status
-    public static function listStatusFinish()
+    public static function listStatusFinish($tenancy_id)
     {
-        $intance = new CustomerService;
-        return $intance->status_name;
+        //$intance = new CustomerService;
+        //return $intance->status_name;
+        //$reasons = ReasonFinish::where('avaliable_to_basic', 1)->get();
+
+        $return = [];
+
+        $rule = RoleUser::where('user_id', Auth::user()->id)->where('tenancy_id', $tenancy_id)->first();
+
+        if(!$rule)
+            return [];
+
+        $reasons = ReasonFinish::where('avaliable_to_'.$rule->name, 1)->where('tenancy_id', $tenancy_id)->orderBy('order', 'asc')->get();
+
+        return $reasons;
+
     }
 
     // Retona o nome de um status
@@ -110,6 +123,9 @@ class CustomerService extends Model
      */
     public function start($negociation = false)
     {
+
+        $stage = Stage::where('tenancy_id', $this->nextCustomer->tenancy_id)->where('is_customer_service_default', 1)->first();
+
         //atualiza Timeline
         $timeline = new CustomerTimeline;
         $timeline->newTimeline($this->nextCustomer, "O usuário #".Auth::user()->id." ".Auth::user()->name." iniciou o atendimento ".($negociation?"(Em modo de negociação)":""), 5);
@@ -119,13 +135,14 @@ class CustomerService extends Model
         $this->remarketing = $this->next_remarketing;
         $this->customer_id = $this->nextCustomer->id;
         $this->user_id = Auth::user()->id;
-        if($negociation) $this->status = 2;
-        if($negociation) $this->reason_finish = 1;
+        $this->stage_id = $stage->id;
+        //if($negociation) $this->status = 2;
+        //if($negociation) $this->reason_finish = 1;
         $this->save();
 
         //Atualiza usuário
         $this->nextCustomer->user_id = Auth::user()->id;
-        $this->nextCustomer->stage_id = 2;
+        $this->nextCustomer->updateStage($stage->id);
         $this->nextCustomer->opened = 1;
         $this->nextCustomer->customer_service_id = $this->id;
         $this->nextCustomer->n_customer_service = count($this->nextCustomer->customerServices);
@@ -135,69 +152,52 @@ class CustomerService extends Model
     }
 
     // Finaliza o atendimento da instancia atual
-    public function end($reason_finish, $description)
+    public function end(ReasonFinish $reason_finish, $description, $request = false)
     {
 
-        // Finaliza
+        // Altera customer service
         $this->status = 2;
-        $this->reason_finish = $reason_finish;
+        $this->reason_finish_id = $reason_finish->id;
+
+        if($reason_finish->customer_service_stage_id)
+            $this->stage_id = $reason_finish->customer_service_stage_id;
+
+        //confim_buy_date
+        if($reason_finish->confim_buy_date ? $request ? $request->buy_date : false : false)
+            $this->buy_date = $request->buy_date;
+
+        //confim_signature_date
+        if($reason_finish->confim_signature_date ? $request ? $request->signature_date : false : false)
+            $this->signature_date = $request->signature_date;
+
+        //confim_delivery_keys_date
+        if($reason_finish->confim_delivery_keys_date ? $request ? $request->delivery_keys_date : false : false)
+            $this->delivery_keys_date = $request->delivery_keys_date;
+
+        //confim_next_contact_date
+        if($reason_finish->confim_next_contact_date ? $request ? $request->next_contact_date : false : false)
+            $this->next_contact_date = $request->next_contact_date;
+
+        //confim_paid_date
         $this->save();
 
         // Salva timeline
-        $event = "O usuário #".Auth::user()->id." ".Auth::user()->name." finalizou o atendimento \n Motivo: ".self::getTitleReasonFinish($reason_finish)."\n Observação: \n ".$description;
+        $event = "O usuário #".Auth::user()->id." ".Auth::user()->name." finalizou o atendimento \n Motivo: ".$reason_finish->name."\n Observação: \n ".$description;
         $timeline = new CustomerTimeline;
         $timeline->newTimeline($this->customer, $event, "5");
 
         /*
         ** Define stage do cliente
         */
-        switch ($reason_finish) {
-            case 1:
-                // Motivo: Em negociação -> Continua com o assistente
-                $stage = 3;
-                break;
-            case 2:
-                // Motivo: Vendido -> Finalizado, continua com o assistente
-                $stage = 7;
-                break;
-            case 3:
-                // Motivo: Outros -> Remarketing
-                $stage = 4;
-                //Cancela todos os agendamentos pendentes
-                Schedule::where([['customer_service_id','=', $this->id],['status','=','1']])
-                    ->update(['status' => '3']);
-                break;
-            case 4:
-                // Motivo: Dados de contato Inválido -> Lixeira
-                $stage = 10;
-                break;
-            case 5:
-                // Motivo: Cliente solicitou remoção -> Lixeira
-                $stage = 10;
-                break;
-            case 6:
-                $stage = 4;
-                //Cancela todos os agendamentos pendentes
-                Schedule::where([['customer_service_id','=', $this->id],['status','=','1']])
-                    ->update(['status' => '3']);
-                break;
-            case 7:
-                $stage = 4;
-                //Cancela todos os agendamentos pendentes
-                Schedule::where([['customer_service_id','=', $this->id],['status','=','1']])
-                    ->update(['status' => '3']);
-                break;
-            default:
-                // Motivo: Outros -> Remarketing
-                $stage = 4;
-                //Cancela todos os agendamentos pendentes
-                Schedule::where([['customer_service_id','=', $this->id],['status','=','1']])
-                    ->update(['status' => '3']);
-                break;
+        if($reason_finish->customer_stage_id){
+            $stage = Stage::find($reason_finish->customer_stage_id);
+            $this->customer->updateStage($reason_finish->customer_stage_id);
         }
 
-        $this->customer->stage_id = $stage;
-        $this->customer->new = false;
+        //confim_buy_date
+        if($reason_finish->confim_buy_date ? $request ? $request->buy_date : false : false)
+            $this->customer->buy_date = $request->buy_date;
+
         $this->customer->save();
 
         return true;

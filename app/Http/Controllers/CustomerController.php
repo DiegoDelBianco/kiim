@@ -40,15 +40,18 @@ class CustomerController extends Controller
         }
 
         $listTeams          = $teams_by_tenancy; //Team::where('tenancy_id', Auth::user()->tenancy_id)->get();
-        //$listWebsites       = Website::where('tenancy_id', Auth::user()->tenancy_id)->get();
+        //$listWebsites     = Website::where('tenancy_id', Auth::user()->tenancy_id)->get();
         $listUsers          = $users_by_tenancy; //User::where('tenancy_id', Auth::user()->tenancy_id)->get();
-        $list_reason_finish =  CustomerService::listStatusFinish();
+        //$list_reason_finish =  CustomerService::listStatusFinish();
+
+        $listStages = \App\Models\Stage::getList();
 
         return view('customers.list-customers', compact(
                 'listTeams',
                 //'listWebsites',
                 'listUsers',
-                'list_reason_finish',
+                'listStages',
+                /*'list_reason_finish',*/
                 'tenancies',
             ));
     }
@@ -122,6 +125,12 @@ class CustomerController extends Controller
             if(!$rel_user)
                 return redirect()->back()->with('error', 'Ops algo deu errado, o usuário e empresa selecionadas não batem.');
         }
+
+        $stage = \App\Models\Stage::where('tenancy_id', Auth::user()->tenancy_id)->where('is_customer_default', true)->first();
+
+        if(!$stage)
+            return redirect()->back()->with('error', 'Não foi possível encontrar o estágio padrão de clientes');
+
         //die($request->source);
         $customer = Customer::create([
             'team_id' => $request->team_id,
@@ -136,6 +145,8 @@ class CustomerController extends Controller
             'ddd_2' => $request->ddd_2,
             'phone_2' => $request->phone_2,
             'tenancy_id' => $request->tenancy_id,
+            'stage_id' => $stage->id,
+            'new' => $stage->is_new,
         ]);
 
         if($customer) {
@@ -167,7 +178,7 @@ class CustomerController extends Controller
             5 => ($customer->customerService ? $customer->customerService->countScheduling(5) : 0)
             ];
 
-        $list_reason_finish =  CustomerService::listStatusFinish();
+        $list_reason_finish =  CustomerService::listStatusFinish($customer->tenancy_id);
         return view('customers.show-customer', compact('customer', 'btn_end_customer_service', 'btn_start_customer_service', 'schedules', 'list_reason_finish'));
     }
 
@@ -205,7 +216,13 @@ class CustomerController extends Controller
      */
     public function destroy(Customer $customer)
     {
-        $customer->stage_id = 10;
+        $this->authorize('delete', $customer);
+
+        $stage = \App\Models\Stage::where('tenancy_id', Auth::user()->tenancy_id)->where('is_deleted', true)->first();
+        if(!$stage)
+            return back()->with('error', 'Não foi possível encontrar a lixeira');
+
+        $customer->updateStage($stage->id);
         $customer->save();
 
         return back()->with('success', 'Lead enviado para a lixeira');

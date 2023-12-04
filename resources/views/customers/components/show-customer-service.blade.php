@@ -325,16 +325,5 @@ function pesquisacep(valor) {
     }
 </script>
 
-<script>
-    function changeMotivoFinalizacao(){
-        let motivo = $("#motivosFinalizar").val();
 
-        if(motivo == 2){
-            $('.j_venda').show();
-        }else{
-            $('.j_venda').hide();
-        }
-
-    }
-</script>
 @stop

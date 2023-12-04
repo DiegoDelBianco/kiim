@@ -27,7 +27,7 @@
                 <td>{{$customer->user_name}}</td>
                 <td>{{\App\Models\Tenancy::find( $customer->tenancy)->name}}</td>
                 <td>{{$customer->team}}</td>
-                <td ><b>{{ \App\Models\Customer::stageTitle($customer->stage_id) }}</b></td>
+                <td ><b>{{ $customer->stage_name }}</b></td>
                 <td>{{ date( 'd/m/Y H:i' , strtotime($customer->created_at)) }}</td>
                 <td>
                     <a class="btn btn-primary" style="font-size: 12px" href="{{route('customers.show', $customer->id)}}"><i class="fas fa-eye"></i></a>

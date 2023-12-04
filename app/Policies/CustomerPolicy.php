@@ -74,7 +74,11 @@ class CustomerPolicy
      */
     public function delete(User $user, Customer $customer): bool
     {
-        //
+        $tenancy_id = $customer->tenancy_id;
+
+        if(Auth::user()->hasAnyRoles(['admin', 'manager'], $tenancy_id))
+            return true;
+
     }
 
     /**

@@ -199,17 +199,25 @@ class Customer extends Model
             // Manda notificação para o usuário
             if($model->user_id != "")
                 NotifyUser::create([
-                    "user_id" => $model->user_id,
-                    "notify_text" => "+1 lead cadastrado para você<br> ".date('H:i'),
-                    "shoot" => date('Y-m-d H:i:s'),
-                    "notify_style" => "high",
-                    "tenancy_id" => Auth::user()->tenancy_id
+                        "user_id" => $model->user_id,
+                        "notify_text" => "+1 lead cadastrado para você<br> ".date('H:i'),
+                        "shoot" => date('Y-m-d H:i:s'),
+                        "notify_style" => "high",
+                        "tenancy_id" => Auth::user()->tenancy_id
                     ]);
         });
 
 
         static::updated(function ($model) {
+            // se tiver atualização do stage_id
+            if ($model->isDirty('stage_id')) {
+                $stage = Stage::find($model->stage_id);
 
+                // Atualiza o modelo sem acionar o evento updated novamente
+                $model->withoutEvents(function () use ($model, $stage) {
+                    $model->update(['new' => $stage->is_new]);
+                });
+            }
         });
     }
 
@@ -217,20 +225,19 @@ class Customer extends Model
      * Retorna o titulo para apresentação de um estagio
      */
     public static function stageTitle($stage_id){
-        $instance = new Customer;
 
-        return
-            isset($instance->stage_title[$stage_id])
-                ? $instance->stage_title[$stage_id] : "Não definido";
+        $stage = Stage::find($stage_id);
+
+
+        return stage->name;
     }
 
     /*
      * Retorna o titulo para apresentação do estágio do customer instanciado
      */
     public function stage(){
-        return
-            isset($this->stage_title[$this->stage_id])
-                ? $this->stage_title[$this->stage_id] : "Não definido";
+
+            return $this->belongsTo(Stage::class);
     }
 
     /*
@@ -246,12 +253,13 @@ class Customer extends Model
         $customers = self::select('SELECT
                                     customers.*
                                     FROM customers
+                                    INNER JOIN stages ON stages.id = customers.stage_id
                                         WHERE
-                                            stage_id <> 10 AND
-                                            stage_id <> 4 AND
+                                            stages.is_avaliable_to_cs =  true AND
+                                            stages.is_deleted =  false AND
                                             user_id = :user_id AND
                                             new = false
-                                            AND tenancy_id = '.Auth::user()->tenancy_id.'
+                                            AND customers.tenancy_id = '.Auth::user()->tenancy_id.'
                                         LIMIT :limit
                                         OFFSET :offset',
                                         ['user_id' => $user, 'limit' => $limit, 'offset' => ($page*$limit)]);
@@ -414,6 +422,10 @@ class Customer extends Model
         // Verifica se o customer pode ser remanejado
         if(!$this->canRedirect()) return false;
 
+        $stage = Stage::where('is_rearranged_default', true)->where('tenancy_id', $this->tenancy_id)->first();
+        if(!$stage) return false;
+
+
         // Verifica se foi passada alguma informação
         if($user == false and $team == false ){
             // Define se é remarketing
@@ -423,7 +435,7 @@ class Customer extends Model
             $this->team_id = NULL;
             $this->user_id = NULL;
             $this->opened = 2;
-            $this->stage_id = 5;
+            $this->updateStage($stage->id);
             $this->save();
 
             // Adicionar no registro de timeline do cliente
@@ -443,8 +455,11 @@ class Customer extends Model
 
         // Caso o atendimento ainda esteja aberto, finaliza ele para poder remanejar o customer
         $customerService = $this->customerService;
-        if($customerService? $customerService->status == 1 : false)
-            $customerService->end(3, 'Finalizado para remanejar');
+        if($customerService? $customerService->status == 1 : false){
+
+            $customerService->end($stage, 'Finalizado para remanejar');
+        }
+
 
         // Daqui para baixo é apenas o redirecionamento para outro atendente
         if( $user == false ) return true;
@@ -455,7 +470,7 @@ class Customer extends Model
         // Fazer o remanejamento
         $this->user_id = $user->id;
         $this->opened = 2;
-        $this->stage_id = 5;
+        $this->updateStage($stage->id);
         $this->save();
 
         // Adicionar no registro de timeline do cliente
@@ -466,11 +481,37 @@ class Customer extends Model
         return true;
     }
 
+    public function updateStage($stage_id){
+        $stage = Stage::find($stage_id);
+        if(!$stage) {
+            return false;
+        }
+        if($stage->tenancy_id != $this->tenancy_id){
+            return false;
+        }
+
+        $this->update([
+            'stage_id' => $stage->id,
+            'new' => $stage->is_new
+        ]);
+
+        // se for deletado ou deixar disponivel para novo atendimento fecha o atendimento anterior
+        $customerService = $this->customerService;
+        if($stage->is_deleted || $stage->is_avaliable_to_cs){
+            if($customerService? $customerService->status == 1 : false){
+                $customerService->update(['status' => 2]);
+            }
+        }
+    }
+
     // Direciona o custmer para uma nova equipe
     public function redirectTeam($team){
 
         // Verifica se o customer pode ser remanejado
         if(!$this->canRedirect()) return false;
+
+        $stage = Stage::where('is_rearranged_default', true)->where('tenancy_id', $customer->tenancy_id)->first();
+        if(!$stage) return false;
 
         // Define se é remarketing
         $remarketing = (!$this->new);
@@ -479,7 +520,7 @@ class Customer extends Model
         $this->team_id = ($team?$team->id:NULL);
         $this->user_id =  NULL;
         $this->opened = 2;
-        $this->stage_id = 5;
+        $this->updateStage($stage->id);
         $this->save();
 
         // Adicionar no registro de timeline do cliente
@@ -497,7 +538,7 @@ class Customer extends Model
         //if($this->n_customer_service == 0 ) return false;
 
         // Verifica se o cliente já está vendido
-        if($this->stage_id >= 6) return false;
+        if($this->stage->is_buy) return false;
 
         if(Auth::user()->hasRole("Master") OR
                         (Auth::user()->hasRole("Gerente") &&
@@ -595,7 +636,14 @@ class Customer extends Model
         }
 
         $customers = $count ? DB::table('customers')->where('opened', '2') : Customer::where('opened', '2');
-        $customers->where([['stage_id', '<' , '6']]);
+        //$customers->where([['stage_id', '<' , '6']]);
+        //$customers->join('stages', 'customers.stage_id', '=', 'stages.id')->where('stages.is_avaliable_to_cs', true);
+        $customers->whereIn('stage_id', function ($query) {
+            $query->select('id')
+                ->from('stages')
+                ->where('is_avaliable_to_cs', true)
+                ->whereColumn('tenancy_id', 'customers.tenancy_id');
+        });
 
         $customers->where(function($query) use ($tenancies, $teams, $tenancy_field){
             // Obtem o proximo na lista pelo usuário
@@ -639,8 +687,17 @@ class Customer extends Model
 
 
         // Remove clientes excluidos da listagem
-        if($args->filtro_stage != 10)
-            $customers->where('stage_id', '<>', '10');
+        $delete = false;
+        if($args->filtro_stage){
+            $stage = Stage::find($args->filtro_stage);
+            $delete = $stage->is_deleted;
+        }
+
+        if ($args->filtro_stage){
+            $customers->whereIn('stage_id', explode(",", $args->filtro_stage));
+        }else{
+            $customers->where('is_deleted', '=', false);
+        }
 
         if ($args->filtro_nome)
             $customers->where('name', 'like', '%'.$args->filtro_nome.'%');
@@ -659,9 +716,6 @@ class Customer extends Model
 
         if ($args->filtro_website)
             $customers->where('website_id', $args->filtro_website);
-
-        if ($args->filtro_stage)
-            $customers->where('stage_id', $args->filtro_stage);
 
         if ($args->filtro_equipe)
             $customers->where('team_id', $args->filtro_equipe);

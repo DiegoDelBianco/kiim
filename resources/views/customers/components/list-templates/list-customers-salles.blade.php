@@ -7,7 +7,7 @@
                 <td><input class="checkDesign" type="checkbox" name="_check[]" form="formulario" value='{{ $customer->id }}' data-id='{{ $customer->id }}'></td>
                 <td>{{$customer->id}}</td>
                 <td>
-                    <strong style="display: inline-block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{$customer->name}}</strong> 
+                    <strong style="display: inline-block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{$customer->name}}</strong>
                     <br><span style="display: inline-block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 13px;" class="event-text">Dado sobre o Lead</span>
                 </td>
                 <td>{{$customer->user->name}}</td>

@@ -141,25 +141,20 @@
                 </div>
                 @endif
 
+                @if(isset($listStages))
                 <div class="col-md-4 mt-2"  @if(isset($blockfilter["stage"])) style="display:none" @endif>
                     <label for="filtro_stage">Estágio</label>
                     <div class="input-group">
                         <label for="filtro_stage" class="input-group-text"><i class="fas fa-map-marker"></i></label>
                         <select name="filtro_stage" id="filtro_stage" class="form-control">
                             <option value="">Todos os Estágios</option>
-                            {{--@foreach($listStages as $stage)
-                                <option value="{{$stage->id}}">{{$stage->name}}</option>
-                            @endforeach--}}
-                            <option value="1">Novo</option>
-                            <option value="3">Negociando</option>
-                            <option value="7">Vendido (Aguardando confirmação)</option>
-                            <option value="8">Vendido</option>
-                            <option value="4">Remarketing</option>
-                            <option value="5">Remanejado</option>
-                            <option value="10" style="color: red; background: #eee">Lixeira</option>
+                            @foreach($listStages as $stage)
+                                <option @if(isset($stage['is_deleted'])) style="color: red; background: #eee" @endif value="{{$stage['key']}}">{{$stage['value']}}</option>
+                            @endforeach
                         </select>
                     </div>
                 </div>
+                @endif
 
             </div>
         </form>
