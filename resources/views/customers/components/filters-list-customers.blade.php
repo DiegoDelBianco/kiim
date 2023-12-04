@@ -1,10 +1,25 @@
 @php if(!isset($blockfilter)) $blockfilter = []; @endphp
 <div class="btn-group me-2" role="group" aria-label="First group">
-  <div class="btn-group" role="group">
-    <button id="btnGroupDrop2" type="button" class="btn btn-outline-secondary dropdown-toggle" data-toggle="dropdown" data-auto-close="outside">
-      <i class="fas fa-filter"></i>
+  <div class="" role="group">
+    <button id="btnGroupDrop2" class="btn btn-outline-secondary" type="button" data-toggle="modal" data-target="#modal-filters-customer">
+      <i class="fas fa-filter"></i> Filtros
     </button>
-    <ul class="dropdown-menu shadow px-3" aria-labelledby="btnGroupDrop2" style="width: 470px;">
+
+
+    <div class="modal fade" id="modal-filters-customer" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Filtre seus clientes</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+
+
+
+
         <form class="form" id="form">
             <input type="hidden" name="orderbyfield" id="orderbyfield" value="">
             <input type="hidden" name="orderbyorder" id="orderbyorder" value="">
@@ -159,7 +174,14 @@
             </div>
         </form>
 
-    </ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" data-dismiss="modal" class="btn btn-success">Ver</button>
+            </div>
+        </div>
+
+    </div>
+</div>
   </div>
 </div>
 
