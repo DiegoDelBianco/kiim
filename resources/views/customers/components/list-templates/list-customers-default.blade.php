@@ -51,7 +51,7 @@
          <tr>
     @endif
 </table>
-<div class="paginacao">
+<div class="paginacao text-center">
     {{$customers->render()}}
 </div>
 

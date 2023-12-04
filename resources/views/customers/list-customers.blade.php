@@ -88,7 +88,23 @@
 
 @section('css')
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+<style>
+    .paginacao svg{
+        max-width: 27px;
+    }
+    .main-canvas {
+        padding-bottom: 30px;
+    }
 
+    .content-wrapper {
+        padding-bottom: 30px;
+    }
+
+    .paginacao .leading-5{
+        padding-top: 15px;
+    }
+
+</style>
 @stop
 
 @section('js')
