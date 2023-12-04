@@ -12,6 +12,8 @@ Modificações a serem feitas
 - Função de fechamento
 
 
+- adicionar localização nos agendamentos
+
 
 - [FEITO] Inserir leads via csv ou na mão, direto como remarketing
 

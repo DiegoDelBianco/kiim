@@ -14,6 +14,8 @@ return new class extends Migration
         Schema::create('schedule_types', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('bk_color')->default('#ffffff');
+            $table->string('text_color')->default('#000000');
             $table->integer('order')->default(0);
             $table->timestamps();
         });

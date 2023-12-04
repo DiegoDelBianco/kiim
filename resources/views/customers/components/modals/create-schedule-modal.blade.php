@@ -20,6 +20,15 @@
                             <label for="inputhour"><strong>Hora:</strong></label>
                             <input type="time" name="time" id="inputhour" class="form-control" >
                         </p>
+                        <p class="d-flex flex-column" style="width: 45%; display: inline-block !important;">
+                            <label for="scheduleType"><strong>Tipo:</strong></label>
+                            <select name="schedule_type_id" id="scheduleType" class="form-control">
+                                <option value="">Selecione</option>
+                                @foreach (\App\Models\ScheduleType::all() as $scheduleType)
+                                    <option value="{{$scheduleType->id}}">{{$scheduleType->name}}</option>
+                                @endforeach
+                            </select>
+                        </p>
                         <p class="d-flex flex-column">
                             <label for="zaptexto"><strong>Descrição</strong></label>
                             <textarea class="form-control" id="create-schedule-description" required name="description" maxlength="255" cols="30" rows="6"></textarea>

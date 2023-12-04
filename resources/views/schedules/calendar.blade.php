@@ -186,6 +186,11 @@
                                             {{--<p class="scheduling  {{$tarefa->getStatus(TRUE)}}-wrap" onClick="showScheduling('{{route("customer.edit", $tarefa->customer_id)}}', '{{$tarefa->customer_name}}', '{{$tarefa->assistent_name}}', `{{str_replace("`",'"',$tarefa->description)}}`, `{{str_replace("`",'"',$tarefa->title)}}`, '{{date("d/m/Y",strtotime($tarefa->date))}}', '{{substr($tarefa->hour, 0, 5)}}', '{{$tarefa->getStatus(TRUE)}}', '{{$tarefa->customer_id? route('customers.show', $tarefa->customer_id):null}}')"  data-toggle="modal" data-target="#modalSchedulingInfo" >--}}
                                             <p class="scheduling  {{$tarefa->getStatus(TRUE)}}-wrap" onClick="showScheduling('{{route("schedules.update.done", $tarefa->id)}}', '{{route("schedules.update.cancel", $tarefa->id)}}', '{{$tarefa->user_name}}', `{{str_replace("`",'"',$tarefa->description)}}`, `{{str_replace("`",'"',$tarefa->title)}}`, '{{date("d/m/Y",strtotime($tarefa->date))}}', '{{substr($tarefa->time, 0, 5)}}', '{{$tarefa->getStatus(TRUE)}}', '{{$tarefa->customer_id? route('customers.show', $tarefa->customer_id):null}}')"  data-toggle="modal" data-target="#modalSchedulingInfo" >
                                                 <span class="assistent-name">{{$tarefa->title}}</span>
+                                                @if($tarefa->type)
+                                                <span style="background-color: {{$tarefa->type->bk_color}}; color: {{$tarefa->type->text_color}};padding: 2px;display: block;width: auto;border-radius: 12px;font-weight: bold;max-width: 99px;margin: auto; font-size: 13px; margin-bottom: 5px">
+                                                    {{$tarefa->type->name}}
+                                                </span>
+                                                @endif
                                                 @if($tarefa->time != "")
                                                     <span class="hour">{{substr($tarefa->time, 0, 5)}}</span>
                                                 @endif

@@ -22,7 +22,8 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('schedules', function (Blueprint $table) {
-            //
+            $table->dropForeign('schedules_schedule_type_id_foreign');
+            $table->dropColumn('schedule_type_id');
         });
     }
 };

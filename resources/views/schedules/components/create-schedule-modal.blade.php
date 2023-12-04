@@ -25,6 +25,23 @@
                                         </select>
                                     </div>
                                 </div>
+
+                                <div class="form-group row">
+                                    <label for="schedule_type_id" class="col-md-4 col-form-label text-md-right">{{ __('Tipo de agendamento') }}</label>
+                                    <div class="col-md-6">
+                                        <select name="schedule_type_id" id="scheduleType" class="form-control">
+                                            <option value="">Selecione</option>
+                                            @foreach (\App\Models\ScheduleType::all() as $scheduleType)
+                                                <option value="{{$scheduleType->id}}">{{$scheduleType->name}}</option>
+                                            @endforeach
+                                        </select>
+                                        @error('schedule_type_id')
+                                            <span class="invalid-feedback" role="alert">
+                                                <strong>{{ $message }}</strong>
+                                            </span>
+                                        @enderror
+                                    </div>
+                                </div>
                                 <div class="form-group row">
                                     <label for="date" class="col-md-4 col-form-label text-md-right">{{ __('Data') }}</label>
                                     <div class="col-md-6">
@@ -48,6 +65,8 @@
                                         @enderror
                                     </div>
                                 </div>
+
+
 
                                 <div class="form-group row">
                                     <label for="title" class="col-md-4 col-form-label text-md-right">{{ __('Titulo') }}</label>

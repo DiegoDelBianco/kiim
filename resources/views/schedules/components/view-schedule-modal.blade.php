@@ -11,7 +11,6 @@
             <div class="modal-body">
                 <p><span class="label">Titulo: </span> <span class="scheduling-title"></span> <a class="info-customer-link btn btn-primary" href="#">Ver</a>  </p>
                 <p><span class="label">Status:</span> <span class="status status-name"></span></p>
-                <!--p><span class="label">Cliente: </span> <span class="customer-name"></span></p-->
                 <p><span class="label">Usuário: </span> <span class="assistent-name"></span></p>
                 <p><span class="label">Data: </span> <span class="scheduling-date"></span><span class="time-wrap"> ás <span class="scheduling-hour"></span></span></p>
                 <p><span class="label">Nota: </span> <span class="scheduling-note"></span></p>

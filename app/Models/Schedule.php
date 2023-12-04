@@ -22,6 +22,7 @@ class Schedule extends Model
         'tenancy_id',
         'title',
         'customer_id',
+        'schedule_type_id'
     ];
 
     // Retonar o titulo do status do agendamento instanciado
@@ -121,6 +122,7 @@ class Schedule extends Model
                             'users.team_id as team_id',
                             'users.name as user_name',
                             'schedules.date as date',
+                            'schedules.schedule_type_id as schedule_type_id',
                             'schedules.title as title',
                             'schedules.customer_id as customer_id',
                             'schedules.customer_service_id as customer_service_id',
@@ -249,6 +251,10 @@ class Schedule extends Model
     public function tenancy()
     {
         return $this->belongsTo('App\Models\Tenancy');
+    }
+    public function type()
+    {
+        return $this->belongsTo('App\Models\ScheduleType', 'schedule_type_id', 'id');
     }
 
     /*hasMany*/

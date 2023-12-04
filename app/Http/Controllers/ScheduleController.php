@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use App\Models\CustomerTimeline;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Tenancy;
+use App\Models\ScheduleType;
 
 class ScheduleController extends Controller
 {
@@ -126,12 +127,14 @@ class ScheduleController extends Controller
 
         if(strlen($request->description) > 255 ) return back()->with('error','Descrição muito longa, deve ter no máximo 255 caracteres');
         if(strlen($request->description) == 0 ) return back()->with('error','Descrição é obrigatória');
+        if($request->schedule_type_id and !ScheduleType::find($request->schedule_type_id)) return back()->with('error','Tipo de agendamento não encontrado');
 
         $result = Schedule::create([
             //'customer_service_id' => $customer_service->id,
             'tenancy_id' => $tenancy_id,
             'user_id' => Auth::user()->id,
             'description' => $request->description,
+            'schedule_type_id' => $request->schedule_type_id,
             'title' => $request->title,
             'date' => $request->date,
             'time' => $request->time,
@@ -167,12 +170,14 @@ class ScheduleController extends Controller
 
         if(strlen($request->description) > 255 ) return back()->with('error','Descrição muito longa, deve ter no máximo 255 caracteres');
         if(strlen($request->description) == 0 ) return back()->with('error','Descrição é obrigatória');
+        if(!ScheduleType::find($request->schedule_type_id)) return back()->with('error','Tipo de agendamento não encontrado');
 
         $result = Schedule::create([
             //'customer_service_id' => $customer_service->id,
             'title' => $customer_service->customer->name,
             'tenancy_id' => $tenancy_id,
             'user_id' => Auth::user()->id,
+            'schedule_type_id' => $request->schedule_type_id,
             'customer_id' => $customer_service->customer_id,
             'customer_service_id' => $customer_service->id,
             'description' => $request->description,
