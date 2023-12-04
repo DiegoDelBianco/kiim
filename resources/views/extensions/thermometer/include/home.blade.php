@@ -39,17 +39,22 @@ if($count_sell > $max_goal){
 //format percentage to 2 decimal places
 $percentage = number_format((float)$percentage, 2, '.', '');
 ?>
-<div class="col-md-6">
+<div class="col-md-8">
     <!-- A boostrap card to call tenancies route -->
     <div class="card" style="width: 100%;">
         <div class="card-body">
+            <div class="buttons" style="position: absolute; top: 15px; right: 15px">
+                <button class="btn btn-dark" data-toggle="modal" data-target="#modal-thermometer-rules-{{$tenancy->id}}"> Regras </button>
+                <button class="btn btn-info" data-toggle="modal" data-target="#modal-thermometer-awards-{{$tenancy->id}}"> Ver Prêmios </button>
+            </div>
             <h5 class="card-title float-none pb-2"> <i class="fas fa-thermometer-quarter"></i> Termometro de vendas {{ $tenancy->name }} </h5>
             <h6 class="card-subtitle mb-2 text-muted"></h6>
             <p class="card-text mb-2">Ganhe prêmios batendo metas de vendas.</p>
 
+
             <br>
             <div class="row list-goals">
-                <div class="col-md-6" style="display: flex;   align-items: center;justify-content: center;text-align: center;">
+                <div class="col-md-12" style="display: flex;   align-items: center;justify-content: center;text-align: center;">
                     <div id="wrapperTermometer{{$extension['tenancy_id']}}">
                         <div id="termometer{{$extension['tenancy_id']}}">
                             <div id="temperature{{$extension['tenancy_id']}}" style="height: {{$percentage}}%;" data-value="{{$count_sell}} Venda{{$count_sell == 1 ? NULL:'s'}}"></div>
@@ -61,16 +66,6 @@ $percentage = number_format((float)$percentage, 2, '.', '');
                             <div id="graduations{{$extension['tenancy_id']}}"></div>
                         </div>
                     </div>
-                </div>
-                <div class="col-md-6 text-center show-goals">
-                    <h3 style="font-size: 15px;padding-bottom: 12px;">Metas</h3>
-                    @foreach($goals as $goal)
-                        <div class="goal-details">
-                            <h5><b>{{$goal->title}}</b></h5>
-                            <p>Meta: {{intval($goal->goal)}} Venda{{$goal->goal == 1 ? null: 's'}}</p>
-                            <p>Recompensa: {{$goal->set_limit_lead? $goal->set_limit_lead." Leads por dia " : NULL}}  {{$goal->set_limit_lead && ($goal->award_value > 1 ) ? ' e ' : null}} {{ $goal->award_value > 1 ? "R$" . number_format($goal->award_value, 2, ',', '.') : null }} {{ !$goal->set_limit_lead && !($goal->award_value > 1)? 'Surpresa' : null; }} </p>
-                        </div>
-                    @endforeach
                 </div>
             </div>
             <div class="row mt-3 text-center" style='border-top: 1px solid #ccc'>
@@ -109,6 +104,68 @@ $percentage = number_format((float)$percentage, 2, '.', '');
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="modal-thermometer-rules-{{$tenancy->id}}" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Regras da campanha</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+
+            <p><b>1-</b> Campanha inicia do primeiro dia e último dia corrido do mês </p>
+            <p><b>2-</b> Os pagamentos irão ocorrer no mês seguinte, somente após o recebimento da comissão de todas as vendas referente ao mês anterior.</p>
+            <p><b>3-</b> O a transferência do prêmio será feito via PIX ou transferência somente na conta titular do ganhador.</p>
+            <p><b>4-</b> Em casos de vendas como Associativo, irá contabilizar normalmente, porém só irá receber após a conclusão do processo de venda.</p>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">fechar</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+<div class="modal fade" id="modal-thermometer-awards-{{$tenancy->id}}" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Metas</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+
+                @foreach($goals as $goal)
+                    <div class="goal-details">
+                        <div class="row">
+                            <div class="col-md-4 text-center">
+                                <img src="{{asset(\App\Models\Extensions\Thermometer::getImagePath($goal->trophy_svg))}}" style="width: 100%; max-width:80px; display: inline">
+                            </div>
+                            <div class="col-md-8 text-left">
+                                <h5><b>{{$goal->title}}</b></h5>
+                                <p>Meta: {{intval($goal->goal)}} Venda{{$goal->goal == 1 ? null: 's'}}</p>
+                                <p>Recompensa: {{$goal->set_limit_lead? $goal->set_limit_lead." Leads por dia " : NULL}}  {{$goal->set_limit_lead && ($goal->award_value > 1 ) ? ' e ' : null}} {{ $goal->award_value > 1 ? "R$" . number_format($goal->award_value, 2, ',', '.') : null }} {{ !$goal->set_limit_lead && !($goal->award_value > 1)? 'Surpresa' : null; }} </p>
+
+                            </div>
+                        </div>
+
+
+                    </div>
+                @endforeach
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">fechar</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
 
 <style>
 #wrapperTermometer{{$extension['tenancy_id']}}{
