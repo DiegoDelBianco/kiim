@@ -154,7 +154,8 @@ class Customer extends Model
         'region',
         'fgts',
         'best_time',
-        'real_state_project'
+        'real_state_project',
+        'product_type_id'
     ];
 
     protected $stage_title = [
@@ -788,6 +789,11 @@ class Customer extends Model
     public function customerService()
     {
         return $this->belongsTo('App\Models\CustomerService');
+    }
+
+    public function productType()
+    {
+        return $this->belongsTo('App\Models\ProductType');
     }
 
     /*hasMany*/

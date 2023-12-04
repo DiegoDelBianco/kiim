@@ -136,6 +136,9 @@ Route::middleware('auth')->group(function () {
     Route::patch('/products/{product}', [ProductController::class, 'update'])->name('products.update');
     Route::delete('/products/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
 
+    // tipo de produto
+    Route::post('/customers/product-type/{customer}', [CustomerController::class, 'updateProductType'])->name('customers.update.product-type');
+
     // Leadages
     Route::get('/websites', [WebsiteController::class, 'index'])->name('websites');
     Route::get('/websites/{product}', [WebsiteController::class, 'create'])->name('websites.create');

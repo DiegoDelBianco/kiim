@@ -211,6 +211,15 @@ class CustomerController extends Controller
         return back()->with('success', 'Alterações salvas!');
     }
 
+    public function updateProductType(Request $request, Customer $customer)
+    {
+        $this->authorize('update', $customer);
+
+        $customer->update(['product_type_id' => $request->product_type_id]);
+
+        return back()->with('success', 'Alterações salvas!');
+    }
+
     /**
      * Remove the specified resource from storage.
      */

@@ -77,7 +77,7 @@
     .ficha_cliente p span{
         font-weight: 500;
         display: inline-block;
-        min-width: 115px;
+        min-width: 160px;
     }
     .ficha_cliente p:nth-child(even) {
       background: #eee;
