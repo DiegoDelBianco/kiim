@@ -127,7 +127,7 @@ class CustomerCsvImportController extends Controller
             $customer->stage_id = $stage->id;
             $customer->new = $stage->is_new;
 
-            $customer->source = 'CSV';
+            $customer->source = $customer->source ? $customer->source : 'CSV';
             $customer->customer_csv_import_id = $import->id;
             //$customer->team_id = $row[$request->team_id];
             $customer->tenancy_id = $import->tenancy_id;
