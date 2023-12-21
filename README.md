@@ -1,6 +1,5 @@
 Modificações a serem feitas
 
-
 - Visualização do termometro para quem deve ver
 - Obtensão de métricas para visualização do termometro
 - Cadastro e administração de metas pelo admin
@@ -10,7 +9,6 @@ Modificações a serem feitas
 - Configuração de agendamento para fechamento de mes
 - Chamada de extensões no fechamento de mes
 - Função de fechamento
-
 
 - adicionar localização nos agendamentos
 

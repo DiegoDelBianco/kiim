@@ -30,6 +30,11 @@ $(document).ready(function(){
     $('.mask-money').mask('000.000,00', {reverse: true});
 });
 
+// mascara para telefone
+$(document).ready(function(){
+    $('.mask-phone').mask('(00) 0 0000-0000');
+});
+
 
 // add whatsapp button with number 11965966300, fixed in bottom right
 $(document).ready(function(){

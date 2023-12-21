@@ -14,7 +14,7 @@
                 </div>
                 <div class="mb-3">
                     <label for="whatsappUpdateClienteForm" class="form-label">Whatsapp</label>
-                    <input value="{{ $customer->whatsapp }}" type="text" class="form-control mask_tel" id="whatsappUpdateClienteForm" name="whatsapp" placeholder="Whatsapp do Cliente" maxlength="20">
+                    <input value="{{ $customer->whatsapp }}" type="text" class="form-control mask-phone" id="whatsappUpdateClienteForm" name="whatsapp" placeholder="Whatsapp do Cliente" maxlength="20">
                 </div>
                 <div class="row mt-2">
                     <div class="col-md-4">

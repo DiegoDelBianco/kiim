@@ -34,9 +34,9 @@ use App\Http\Controllers\ExtensionController;
 |
 */
 
-Route::get('/', function () {
+/*Route::get('/', function () {
     return view('public');
-});
+});*/
 Route::get('/politica-de-privacidade', function () {
     return view('public.politica-de-privacidade');
 });
