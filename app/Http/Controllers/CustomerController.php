@@ -86,8 +86,9 @@ class CustomerController extends Controller
             $orderbyorder = $args->orderbyorder;
         }
 
-
-        return view('customers.components.list-templates.'.$listView, compact('customers', 'orderbyfield', 'orderbyorder', 'listTeams', 'listUsers'));
+        $dateIni = substr($request->filtro_data, 0, 10);
+        $dateEnd =  substr($request->filtro_data, 22, 10);
+        return view('customers.components.list-templates.'.$listView, compact('customers', 'orderbyfield', 'orderbyorder', 'listTeams', 'listUsers', 'dateIni', 'dateEnd'));
     }
 
     /**

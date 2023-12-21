@@ -144,8 +144,13 @@
 <script type="text/javascript" defer>
 
 /****  script para filtros  ****/
+var currentDate = new Date();
+currentDate.setDate(currentDate.getDate() - 30);
+currentDate.setHours(0, 0, 0, 0);
+var start = currentDate.toLocaleString();
 $(function() {
-    var start = '01/01/2017 00:00:00';
+
+    //var start = '01/01/2017 00:00:00';
     $('.dataPick').daterangepicker({
         "showDropdowns": true,
         "showWeekNumbers": true,
@@ -154,6 +159,7 @@ $(function() {
         "startDate": start,
               "endDate": new Date,
         ranges: {
+            'Tudo': [moment().subtract(3, 'years'), moment()],
             'Hoje': [moment(), moment()],
             'Ontem': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
             'Últimos 7 dias': [moment().subtract(6, 'days'), moment()],
@@ -178,6 +184,18 @@ $(function() {
     });
 });
 
+function resetFilters(){
+    $('#filtro_nome').val('');
+    $('#filtro_data').data('daterangepicker').setStartDate(start);
+    $('#filtro_data').data('daterangepicker').setEndDate(new Date);
+    $('#filtro_cpf').val('');
+    $('#filtro_phone').val('');
+    $('#filtro_equipe').val('');
+    $('#filtro_assistent').val('');
+    $('#filtro_website').val('');
+    $('#filtro_stage').val('');
+    carregarTabela(0);
+}
 
 $(document).ready(function() {
     /*$('select[name="filtro_equipe"]').on('change', function() {

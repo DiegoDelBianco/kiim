@@ -55,7 +55,7 @@
                 </div>
             </div>
 
-            <div class="row mt-2">
+            <!--div class="row mt-2">
                 <div class="col">
                     <label for="filtro_alt">Última Alteração</label>
                     <div class="input-group">
@@ -63,7 +63,7 @@
                         <input type="text" class="form-control dataPick" name="filtro_alt" id="filtro_alt" onchange="carregarTabela(0)">
                     </div>
                 </div>
-            </div>
+            </div-->
 
             <div class="row mt-2">
                 <div class="col-md-4 mt-2">
@@ -176,6 +176,7 @@
 
             </div>
             <div class="modal-footer">
+                <button onclick="resetFilters()" type="button" class="btn btn-info">Limpar filtros</button>
                 <button type="button" data-dismiss="modal" class="btn btn-success">Ver</button>
             </div>
         </div>

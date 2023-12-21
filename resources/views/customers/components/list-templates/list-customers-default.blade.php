@@ -1,3 +1,4 @@
+<div style="float:left; padding-left: 20px;" class="pr-3"><p><strong>Periodo: </strong><span id="total-periodo">{{$dateIni}} Até {{$dateEnd}} </span></p></div>
 <div style="float:right; padding-right: 20px;" class="pr-3"><p><strong>Total: </strong><span id="total-clientes">{{$customers->total()}}</span> Leads</p></div>
 <table  class="table customers" style="width: 100%;">
     <thead>
