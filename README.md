@@ -9,6 +9,7 @@ Modificações a serem feitas
 - Configuração de agendamento para fechamento de mes
 - Chamada de extensões no fechamento de mes
 - Função de fechamento
+- dentro da view list-customers na linha var listUsers = {!! json_encode($listUsers) !!}; verificar se esta exibindo listagem completa de corretores para outros corretores que não deveriam ter acesso a isso
 
 - adicionar localização nos agendamentos
 

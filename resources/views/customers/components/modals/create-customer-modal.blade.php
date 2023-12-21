@@ -18,29 +18,23 @@
                                 <select class="form-control" required name="tenancy_id" id="tenancyTeamForm">
                                     <option value="">Selecione</option>
                                     @foreach($tenancies  as $tenancy)
-                                        <option value="{{$tenancy->id}}">{{$tenancy->name}}</option>
+                                        <option role="{{Auth::user()->hasAnyRoles(['basic'], $tenancy->id)? 'basic' : 'manager'}}" value="{{$tenancy->id}}">{{$tenancy->name}}</option>
                                     @endforeach
                                 </select>
                             </div>
                         </div>
 
-                        <div class="mb-3">
+                        <div class="mb-3 d-none">
                             <label for="equipeAddClienteForm" class="form-label">Equipe</label>
                             <select class="form-control" id="equipeAddClienteForm" name="team_id">
                                 <option value="" selected disable>Na fila</option>
-                                {{--@foreach ($listTeams as $key => $value)
-                                    <option value="{{ $value->id }}" @if($value->id == Auth::user()->team_id) selected @endif >{{ $value->name }}</option>
-                                @endforeach--}}
                             </select>
                         </div>
 
-                        <div class="mb-3">
+                        <div class="mb-3 d-none">
                             <label for="equipeAddUserForm" class="form-label">Usuário</label>
                             <select class="form-control" id="equipeAddUserForm" name="user_id">
                                 <option value="" selected disable>Na fila</option>
-                                {{--@foreach ($listUsers as $user)
-                                    <option value="{{ $user->id }}" @if($user->id == Auth::user()->id) selected @endif >{{ $user->name }}</option>
-                                @endforeach--}}
                             </select>
                         </div>
 

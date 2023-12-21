@@ -9,9 +9,6 @@
 @section('content')
 
 
-
-
-
     <div class="bg-white main-canvas">
 
         <!-- Bread Crumbs e Botão +Add Cliente -->
@@ -197,49 +194,9 @@ function resetFilters(){
     carregarTabela(0);
 }
 
-$(document).ready(function() {
-    /*$('select[name="filtro_equipe"]').on('change', function() {
-        $('select[name="filtro_assistent"]').empty();
-        var stateID = $(this).val();
-        if(stateID) {
-            $.ajax({
-                url: '/city/'+stateID,
-                type: "GET",
-                dataType: "json",
-                success:function(data) {
-                    $('select[name="filtro_assistent"]').append('<option value="">Todos os Assistentes</option>');
-                    $.each(data, function(key, value) {
-                        $('select[name="filtro_assistent"]').append('<option value="'+ key +'">'+ value +'</option>');
-                    });
-                }
-            });
-        }else{
-            $('select[name="filtro_assistent"]').append('<option value="">Todos os Assistentes</option>');
-        }
-    });*/
-    /*$('select[name="sector_id"]').on('change', function() {
-        $('select[name="team_id"]').empty();
-        var stateID = $(this).val();
-        if(stateID) {
-            $.ajax({
-                url: '/equipe/'+stateID,
-                type: "GET",
-                dataType: "json",
-                success:function(data) {
-                    $('select[name="team_id"]').append('<option value="" selected disabled>Escolha uma Equipe</option>');
-                    $.each(data, function(key, value) {
-                        $('select[name="team_id"]').append('<option value="'+ key +'">'+ value +'</option>');
-                    });
-                }
-            });
-        }else{
-            $('select[name="team_id"]').append('<option value="">Todos os Assistentes</option>');
-        }
-    });*/
-
-});
 /****  Fim script para filtros  ****/
 </script>
+
 
 
 <script>
@@ -256,60 +213,31 @@ $(document).ready(function() {
         $('select[name="team_id"]').html('<option value="">Na Fila</option>');
         $('select[name="user_id"]').html('<option value="">Na Fila</option>');
 
-        // foreach in listTeams var
-        for (var key in listTeams) {
-            if(listTeams[key][0] !== undefined ){
-                if(listTeams[key][0]['tenancy_id'] == tenancy_id){
-                    for(var key2 in listTeams[key]) {
-                        console.log(listTeams[key][key2]['name'] );
-                        $('select[name="team_id"]').append('<option value="'+ listTeams[key][key2]['id'] +'">'+ listTeams[key][key2]['name'] +'</option>');
-                    }
-                }
-            }
+        const selectedOption = $('select[name="tenancy_id"] option:selected');
+        const role = selectedOption.attr('role');
+
+        if(role == 'basic' || role == '' || role == undefined){
+            $('select[name="team_id"]').parent().addClass('d-none');
+            $('select[name="user_id"]').parent().addClass('d-none');
+        }else{
+            $('select[name="team_id"]').parent().removeClass('d-none');
+            $('select[name="user_id"]').parent().removeClass('d-none');
         }
 
-        // foreach in listTeams var
-        for (var key in listUsers) {
-            console.log(listUsers[key][0]['tenancy_id'] );
-            if(listUsers[key][0]['pivot']['tenancy_id'] == tenancy_id){
-                for(var key2 in listUsers[key]) {
-                    console.log(listUsers[key][key2]['name'] );
-                    $('select[name="user_id"]').append('<option value="'+ listUsers[key][key2]['id'] +'">'+ listUsers[key][key2]['name'] +'</option>');
-                }
-            }
+        for (var key in listTeams[tenancy_id]) {
+            let team = listTeams[tenancy_id][key];
+            $('select[name="team_id"]').append('<option value="'+ team.id +'">'+ team.name +'</option>');
         }
 
-/*
-        listTeams.forEach(function(team){
-            if(team['tenancy_id'] == tenancy_id){
-                $('select[name="team_id"]').append('<option value="'+ team['id'] +'">'+ team['name'] +'</option>');
-            }
-        });
+        for (var key in listUsers[tenancy_id]) {
+            let user = listUsers[tenancy_id][key];
+            $('select[name="user_id"]').append('<option '+(({{Auth::user()->id}} == user.id & role == 'basic' )? ' selected ' : null)+' value="'+ user.id +'">'+ user.name +'</option>');
+        }
 
-
-
-        listUsers.map(function(user){
-            if(user['tenancy_id'] == tenancy_id){
-                $('select[name="user_id"]').append('<option value="'+ user['id'] +'">'+ user['name'] +'</option>');
-            }
-        });
-*/
     });
     $('select[name="team_id"]').on('change', function() {
         $('select[name="user_id"]').html('<option value="">Na Fila</option>');
         var team_id = $(this).val();
-        /*$.ajax({
-            url: "{{route('users.list.ajax.by-team')}}",
-            type: "GET",
-            data: {team_id: team_id},
-            dataType: "json",
-            success:function(data) {
-                $('select[name="user_id"]').html('<option value="">Na Fila</option>');
-                data.map(function(assistent){
-                    $('select[name="user_id"]').append('<option value="'+ assistent['id'] +'">'+ assistent['name'] +'</option>');
-                });
-            }
-        });*/
     });
 });
 /*****  FIM - Script para o modal de criar customer  ******/

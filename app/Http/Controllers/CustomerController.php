@@ -137,7 +137,7 @@ class CustomerController extends Controller
             'team_id' => $request->team_id,
             'source' => $request->source,
             'source_other' => $request->source_other,
-            'user_id' => $request->user_id,
+            'user_id' => Auth::user()->hasAnyRoles(['basic'], $request->tenancy_id) ? Auth::user()->id : $request->user_id,
             'name' => $request->name,
             'email' => $request->email,
             'whatsapp' => $request->whatsapp,
