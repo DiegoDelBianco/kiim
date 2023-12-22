@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 use App\Models\Extensions\Thermometer;
+use App\Models\ExtensionConfig;
 
 class ThermometerController extends Controller
 {
@@ -72,4 +73,15 @@ class ThermometerController extends Controller
 
         return redirect()->route('extensions.thermometer')->with('success', 'Meta deletada com sucesso!');
     }
+
+    public function config(Request $request)
+    {
+
+        if($request->has('rules')){
+            ExtensionConfig::setValue('thermometer', 'rules', $request->rules);
+        }
+
+        return redirect()->route('extensions.thermometer')->with('success', 'Termômetro configurado com sucesso!');
+    }
+
 }

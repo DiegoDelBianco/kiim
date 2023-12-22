@@ -18,6 +18,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/thermometer', [ThermometerController::class, 'newGoal'])->name('extensions.thermometer.new-goal');
     Route::patch('/thermometer/{goal}', [ThermometerController::class, 'upGoal'])->name('extensions.thermometer.up-goal');
     Route::delete('/thermometer/{goal}', [ThermometerController::class, 'delGoal'])->name('extensions.thermometer.del-goal');
+    Route::post('/thermometer/config', [ThermometerController::class, 'config'])->name('extensions.thermometer.config');
 
 });
 

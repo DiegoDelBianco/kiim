@@ -105,6 +105,8 @@ $percentage = number_format((float)$percentage, 2, '.', '');
     </div>
 </div>
 
+
+
 <div class="modal fade" id="modal-thermometer-rules-{{$tenancy->id}}" role="dialog">
     <div class="modal-dialog">
 
@@ -115,11 +117,7 @@ $percentage = number_format((float)$percentage, 2, '.', '');
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
             </div>
             <div class="modal-body">
-
-            <p><b>1-</b> Campanha inicia do primeiro dia e último dia corrido do mês </p>
-            <p><b>2-</b> Os pagamentos irão ocorrer no mês seguinte, somente após o recebimento da comissão de todas as vendas referente ao mês anterior.</p>
-            <p><b>3-</b> O a transferência do prêmio será feito via PIX ou transferência somente na conta titular do ganhador.</p>
-            <p><b>4-</b> Em casos de vendas como Associativo, irá contabilizar normalmente, porém só irá receber após a conclusão do processo de venda.</p>
+            <?php echo \App\Models\ExtensionConfig::getValue('thermometer', 'rules', $tenancy->id); ?>
 
             </div>
             <div class="modal-footer">

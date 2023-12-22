@@ -66,6 +66,26 @@
 
                 </div>
             </div>
+            <div class="card">
+                <div class="card-body">
+                    <h2 style="margin-bottom: 15px; font-size: 22px; color: #777; text-align:center">Configure o termometro:</h2>
+                    <form action="{{route('extensions.thermometer.config')}}" method="post">
+                        @csrf
+                        <div class="form-group row">
+
+                            <label class="col-md-2 col-form-label text-md-right" for="rules">Regras:</label>
+                            <div class="col-md-10">
+                                <textarea name="rules" id="rules" class="form-control" style="min-height: 250px"><?php echo \App\Models\ExtensionConfig::getValue('thermometer', 'rules'); ?></textarea>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 text-center">
+                                <button type="submit" class="btn btn-info">Salvar</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
     @include('extensions/thermometer/components/modal-create-goal')
