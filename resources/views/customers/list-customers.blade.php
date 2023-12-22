@@ -206,12 +206,14 @@ function resetFilters(){
 // Pass variables arrays from php ($listTeams and $listUsers) to javascript
 var listTeams = {!! json_encode($listTeams) !!};
 var listUsers = {!! json_encode($listUsers) !!};
+var listStages = {!! json_encode($listStagesByTenancy) !!};
 
 $(document).ready(function() {
     $('select[name="tenancy_id"]').on('change', function() {
         var tenancy_id = $(this).val();
         $('select[name="team_id"]').html('<option value="">Na Fila</option>');
         $('select[name="user_id"]').html('<option value="">Na Fila</option>');
+        $('select[name="stage_id"]').html('<option value=""></option>');
 
         const selectedOption = $('select[name="tenancy_id"] option:selected');
         const role = selectedOption.attr('role');
@@ -232,6 +234,11 @@ $(document).ready(function() {
         for (var key in listUsers[tenancy_id]) {
             let user = listUsers[tenancy_id][key];
             $('select[name="user_id"]').append('<option '+(({{Auth::user()->id}} == user.id & role == 'basic' )? ' selected ' : null)+' value="'+ user.id +'">'+ user.name +'</option>');
+        }
+
+        for (var key in listStages[tenancy_id]) {
+            let stage = listStages[tenancy_id][key];
+            $('select[name="stage_id"]').append('<option value="'+ stage.id +'">'+ stage.name +'</option>');
         }
 
     });

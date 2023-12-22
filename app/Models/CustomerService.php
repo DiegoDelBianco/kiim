@@ -121,32 +121,37 @@ class CustomerService extends Model
      *
      * $negociation define se vai inicar em modo de negociação
      */
-    public function start($negociation = false)
+    public function start($negociation = false, $user_id = false, $next_id = false, $stage_id = false)
     {
 
-        $stage = Stage::where('tenancy_id', $this->nextCustomer->tenancy_id)->where('is_customer_service_default', 1)->first();
+        $user = $user_id ? User::find($user_id) : Auth::user();
+        if($next_id) $this->nextCustomer = Customer::find($next_id);
+
+        $stage = $stage_id ? Stage::find($stage_id) : Stage::where('tenancy_id', $this->nextCustomer->tenancy_id)->where('is_customer_service_default', 1)->first();
 
         //atualiza Timeline
         $timeline = new CustomerTimeline;
-        $timeline->newTimeline($this->nextCustomer, "O usuário #".Auth::user()->id." ".Auth::user()->name." iniciou o atendimento ".($negociation?"(Em modo de negociação)":""), 5);
+        $timeline->newTimeline($this->nextCustomer, "O usuário #".$user->id." ".$user->name." iniciou o atendimento ".($negociation?"(Em modo de negociação)":""), 5);
 
         //Salva o novo atendimento
         $this->tenancy_id = $this->nextCustomer->tenancy_id;
         $this->remarketing = $this->next_remarketing;
         $this->customer_id = $this->nextCustomer->id;
-        $this->user_id = Auth::user()->id;
+        $this->user_id = $user->id;
         $this->stage_id = $stage->id;
-        //if($negociation) $this->status = 2;
+        if($negociation) $this->status = 2;
         //if($negociation) $this->reason_finish = 1;
         $this->save();
 
         //Atualiza usuário
-        $this->nextCustomer->user_id = Auth::user()->id;
-        $this->nextCustomer->updateStage($stage->id);
+        $this->nextCustomer->user_id = $user->id;
         $this->nextCustomer->opened = 1;
         $this->nextCustomer->customer_service_id = $this->id;
         $this->nextCustomer->n_customer_service = count($this->nextCustomer->customerServices);
         $this->nextCustomer->save();
+
+
+        $this->nextCustomer->updateStage($stage->id);
 
         return true;
     }

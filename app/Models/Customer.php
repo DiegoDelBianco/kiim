@@ -520,9 +520,14 @@ class Customer extends Model
         // se for deletado ou deixar disponivel para novo atendimento fecha o atendimento anterior
         $customerService = $this->customerService;
         if($stage->is_deleted || $stage->is_avaliable_to_cs){
-            if($customerService? $customerService->status == 1 : false){
+            if($customerService ? $customerService->status == 1 : false){
                 $customerService->update(['status' => 2]);
             }
+        }
+
+        if(!$stage->is_deleted && !$stage->is_avaliable_to_cs && !$customerService){
+            $customerService = new CustomerService;
+            $customerService->start(true, ($this->user_id ?? Auth::user()->id), $this->id, $stage_id);
         }
     }
 

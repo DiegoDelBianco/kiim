@@ -31,18 +31,19 @@ class CustomerController extends Controller
             $tenancies[$tenancy->tenancy_id] = $current_tenancy;
             $teams_by_tenancy[$tenancy->tenancy_id] = [];
             $users_by_tenancy[$tenancy->tenancy_id] = [];
+            $stages_by_tenancy[$tenancy->tenancy_id] = [];
             if(Auth::user()->can('manage-users', $tenancy->tenancy_id)){
                 $users_by_tenancy[$tenancy->tenancy_id] = $current_tenancy->users;
             }
             if(Auth::user()->can('manage-teams', $tenancy->tenancy_id)){
                 $teams_by_tenancy[$tenancy->tenancy_id] = $current_tenancy->teams;
             }
+            $stages_by_tenancy[$tenancy->tenancy_id] = $current_tenancy->stages;
         }
 
-        $listTeams          = $teams_by_tenancy; //Team::where('tenancy_id', Auth::user()->tenancy_id)->get();
-        //$listWebsites     = Website::where('tenancy_id', Auth::user()->tenancy_id)->get();
-        $listUsers          = $users_by_tenancy; //User::where('tenancy_id', Auth::user()->tenancy_id)->get();
-        //$list_reason_finish =  CustomerService::listStatusFinish();
+        $listTeams          = $teams_by_tenancy;
+        $listUsers          = $users_by_tenancy;
+        $listStagesByTenancy     = $stages_by_tenancy;
 
         $listStages = \App\Models\Stage::getList();
 
@@ -53,6 +54,7 @@ class CustomerController extends Controller
                 'listStages',
                 /*'list_reason_finish',*/
                 'tenancies',
+                'listStagesByTenancy'
             ));
     }
 
@@ -150,6 +152,15 @@ class CustomerController extends Controller
             'new' => $stage->is_new,
             'real_state_project' => $request->real_state_project,
         ]);
+
+        if($customer && $request->stage_id){
+            $stage = \App\Models\Stage::where('tenancy_id',  $request->tenancy_id)->where('id', $request->stage_id)->first();
+
+            if(!$stage)
+                return redirect()->back()->with('error', 'Ops algo deu errado, o estágio e empresa selecionadas não batem.');
+
+            $customer->updateStage($stage->id);
+        }
 
         if($customer) {
             return redirect()->route('customers')->with('success','Lead adicionado!');

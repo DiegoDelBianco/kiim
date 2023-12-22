@@ -25,7 +25,7 @@
 
                 <div class="mb-3">
                     <label for="empreendimentoUpdateClienteForm" class="form-label">Empreendimento</label>
-                    <input value="{{ $customer->real_state_project }}" required type="text" class="form-control" id="empreendimentoUpdateClienteForm" name="real_state_project" placeholder="" maxlength="60">
+                    <input value="{{ $customer->real_state_project }}" type="text" class="form-control" id="empreendimentoUpdateClienteForm" name="real_state_project" placeholder="" maxlength="60">
                 </div>
                 <div class="mb-3">
                     <label for="emailUpdateClienteForm" class="form-label">E-mail</label>

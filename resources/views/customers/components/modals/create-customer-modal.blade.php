@@ -39,6 +39,13 @@
                         </div>
 
                         <div class="mb-3">
+                            <label for="stageAddUserForm" class="form-label">Estágio</label>
+                            <select class="form-control" id="stageAddUserForm" name="stage_id">
+                                <option value="" selected disable>Selecine a empresa</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
                             <label for="sourceAddUserForm" class="form-label">Fonte</label>
                             <select class="form-control" id="sourceAddUserForm" name="source" onclick="if(this.value=='Outros'){ $('.wrapSourceOtherAddUserForm').show(); }else{ $('.wrapSourceOtherAddUserForm').hide(); }">
                                 <option value="" selected >Selecione</option>
@@ -50,7 +57,7 @@
 
                         <div class="mb-3">
                             <label for="empreendimentoAddClienteForm" class="form-label">Empreendimento</label>
-                            <input value="" required type="text" class="form-control" id="empreendimentoAddClienteForm" name="real_state_project" placeholder="" maxlength="60">
+                            <input value="" type="text" class="form-control" id="empreendimentoAddClienteForm" name="real_state_project" placeholder="" maxlength="60">
                         </div>
 
                         <div class="mb-3 wrapSourceOtherAddUserForm" style="display:none">
