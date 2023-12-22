@@ -158,6 +158,22 @@ class Customer extends Model
         'product_type_id'
     ];
 
+    protected $list_sources = [
+        'Network' => 'Network',
+        'Indicação' => 'Indicação',
+        'Facebook (Tráfego Pago)' => 'Facebook (Tráfego Pago)',
+        'Instagram (Tráfego Pago)' => 'Instagram (Tráfego Pago)',
+        'Google (Tráfego Pago)' => 'Google (Tráfego Pago)',
+        'Tiktok (Tráfego Pago)' => 'Tiktok (Tráfego Pago)',
+        'Facebook (Tráfego Orgânico)' => 'Facebook (Tráfego Orgânico)',
+        'Instagram (Tráfego Orgânico)' => 'Instagram (Tráfego Orgânico)',
+        'Google (Tráfego Orgânico)' => 'Google (Tráfego Orgânico)',
+        'Tiktok (Tráfego Orgânico)' => 'Tiktok (Tráfego Orgânico)',
+        'Disparo de E-mail' => 'Disparo de E-mail',
+        'Disparo Whatsapp' => 'Disparo Whatsapp',
+        'Outros' => 'Outros',
+    ];
+
     protected $stage_title = [
             1 => "Novo",                                // Antigo 1
             2 => "Em atendimento",                      // Antigo 6
@@ -220,6 +236,11 @@ class Customer extends Model
                 });
             }
         });
+    }
+
+    public static function listSources(){
+        $instance = new Customer();
+        return $instance->list_sources;
     }
 
     /*

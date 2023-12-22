@@ -9,6 +9,25 @@
                     <input value="{{ $customer->name }}" required type="text" class="form-control" id="nomeUpdateClienteForm" name="name" placeholder="Nome do Cliente" maxlength="60">
                 </div>
                 <div class="mb-3">
+                    <label for="sourceUpdateUserForm" class="form-label">Fonte</label>
+                    <select class="form-control" id="sourceUpdateUserForm" name="source" onclick="if(this.value=='Outros'){ $('.wrapSourceOtherUpdateUserForm').show(); }else{ $('.wrapSourceOtherUpdateUserForm').hide(); }">
+                        <option value="" selected >Selecione</option>
+                        @foreach(\App\Models\Customer::listSources() as $source)
+                            <option {{$source == $customer->source ? 'selected': null}} value="{{$source}}">{{$source}}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="mb-3 wrapSourceOtherUpdateUserForm" @if($customer->source !== 'Outros') style="display:none" @endif>
+                    <label for="wrapSourceOtherUpdateUserForm" class="form-label">Descreva a fonte</label>
+                    <input value="{{ $customer->source_other }}" class="form-control" id="wrapSourceOtherUpdateUserForm" name="source_other" />
+                </div>
+
+                <div class="mb-3">
+                    <label for="empreendimentoUpdateClienteForm" class="form-label">Empreendimento</label>
+                    <input value="{{ $customer->real_state_project }}" required type="text" class="form-control" id="empreendimentoUpdateClienteForm" name="real_state_project" placeholder="" maxlength="60">
+                </div>
+                <div class="mb-3">
                     <label for="emailUpdateClienteForm" class="form-label">E-mail</label>
                     <input value="{{ $customer->email }}" type="text" class="form-control" id="emailUpdateClienteForm" name="email" placeholder="E-mail do Cliente" maxlength="60">
                 </div>

@@ -5,7 +5,7 @@
                 <p><span>Nome: </span> {{ $customer->name!="" ? $customer->name : "Não informado" }} </p>
                 <p><span>Status: </span> {{ $customer->stage->name }} {{-- !$customer->new ? "Retorno" : "Primeiro atendimento" }} ({{ $customer->customerService ? ( $customer->customerService->status == 1 ? "Atendimento Aberto": "Atendimento Finalizado"):"Não atendido" --}}  </p>
                 <p><span>Cadastrado: </span> Dia {{ $customer->created_at != "" ? date( 'd/m/Y H:i' , strtotime($customer->created_at)):"Não informado" }} {{ isset($customer->website) ? "em " . $customer->website->name : "" }}</p>
-                <p><span>Origem do lead: </span>  {{$customer->source}}</p>
+                <p><span>Origem do lead: </span>  {{$customer->source != 'Outros' ? $customer->source : $customer->source_other}}</p>
                 <p><span>Empreendimento: </span> {{$customer->real_state_project}} </p>
                 <p><span>Interessado em: </span> {{$customer->product_type_id?$customer->productType->name:'Não informado'}} <button data-toggle="modal" data-target="#modal-show-product-type" type="button" class="btn btn-info" data-bs-toggle="dropdown" aria-expanded="false" style="padding-left: 6px;padding-right: 6px;margin-left: 10px;"> <i class="fas fa-edit"></i> </button>  </p>
                 <p><span>Whatsapp: </span> <?php echo  $customer->whatsapp != "" ? $customer->whatsapp . " " . ' <a target="_blank" class="cli_whats" href="https://api.whatsapp.com/send?phone='.preg_replace('/[^0-9]/', '',  $customer->whatsapp).'"><i class="fab fa-whatsapp"></i></a>' : "Não informado" ; ?>  </p>

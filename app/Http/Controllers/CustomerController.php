@@ -148,6 +148,7 @@ class CustomerController extends Controller
             'tenancy_id' => $request->tenancy_id,
             'stage_id' => $stage->id,
             'new' => $stage->is_new,
+            'real_state_project' => $request->real_state_project,
         ]);
 
         if($customer) {
@@ -198,14 +199,17 @@ class CustomerController extends Controller
     {
         $this->authorize('update', $customer);
 
-        $customer->name             = $request->name;
-        $customer->email            = $request->email;
-        $customer->whatsapp         = $request->whatsapp;
-        $customer->ddd              = $request->ddd;
-        $customer->phone            = $request->phone;
-        $customer->ddd_2            = $request->ddd_2;
-        $customer->phone_2          = $request->phone_2;
-        $customer->birth            = $request->birth;
+        $customer->name                 = $request->name;
+        $customer->email                = $request->email;
+        $customer->whatsapp             = $request->whatsapp;
+        $customer->ddd                  = $request->ddd;
+        $customer->phone                = $request->phone;
+        $customer->ddd_2                = $request->ddd_2;
+        $customer->phone_2              = $request->phone_2;
+        $customer->birth                = $request->birth;
+        $customer->real_state_project   = $request->real_state_project;
+        $customer->source               = $request->source;
+        $customer->source_other         = $request->source_other;
 
         $customer->save();
 
