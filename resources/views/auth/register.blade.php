@@ -16,6 +16,12 @@
             <x-input-error :messages="$errors->get('business_name')" class="mt-2" />
         </div>
 
+        <div class="mt-4">
+            <x-input-label for="creci" :value="__('Seu creci')" />
+            <x-text-input id="creci" class="block mt-1 w-full mask-creci" type="text" name="creci" :value="old('creci')" required autofocus autocomplete="creci" />
+            <x-input-error :messages="$errors->get('creci')" class="mt-2" />
+        </div>
+
         <!-- Email Address -->
         <div class="mt-4">
             <x-input-label for="email" :value="__('Email')" />

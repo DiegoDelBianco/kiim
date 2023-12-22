@@ -35,6 +35,10 @@ $(document).ready(function(){
     $('.mask-phone').mask('(00) 0 0000-0000');
 });
 
+// mascara pra creci
+$(document).ready(function(){
+   // $('.mask-creci').mask('0000-F');
+});
 
 // add whatsapp button with number 11965966300, fixed in bottom right
 $(document).ready(function(){

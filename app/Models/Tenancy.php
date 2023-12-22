@@ -34,7 +34,7 @@ class Tenancy extends Model
         'assas_id',
     ];
 
-    public static function newTenancyWithUser($business_name, $name, $email, $password)
+    public static function newTenancyWithUser($business_name, $name, $email, $password, $creci)
     {
 
         $tenancy = Tenancy::create([
@@ -63,6 +63,7 @@ class Tenancy extends Model
             'email' => $email,
             'password' => Hash::make($password),
             'tenancy_id' => $tenancy->id,
+            'creci' => $creci,
         ]);
 
         $tenancy->user_id = $user->id;

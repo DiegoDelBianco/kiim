@@ -85,6 +85,7 @@ class UserController extends Controller
 
         $request->validate([
             'password' => 'required|string|min:6|confirmed',
+            'creci' => 'required|string|max:255',
         ]);
 
         $user = Tenancy::newTenancyWithUser(
@@ -92,6 +93,7 @@ class UserController extends Controller
             $request->name,
             $request->email,
             $request->password,
+            $request->creci,
         );
 
         // assign roles to user
