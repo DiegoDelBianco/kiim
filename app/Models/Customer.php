@@ -575,7 +575,7 @@ class Customer extends Model
         return false;
     }
 
-    public static function baseQueryUserSearch($useView = true){
+    public static function baseQueryUserSearch($useView = true, $deleted = false){
 
         $tenancy_field = ($useView?'tenancy':'tenancy_id');
 
@@ -615,6 +615,14 @@ class Customer extends Model
             }
         });
 
+        if(!$deleted){
+            $customers->whereIn('stage_id', function ($query) {
+                $query->select('id')
+                    ->from('stages')
+                    ->where('is_deleted', false)
+                    ->whereColumn('tenancy_id', 'view_base_customers.tenancy');
+            });
+        }
         return $customers;
     }
 
