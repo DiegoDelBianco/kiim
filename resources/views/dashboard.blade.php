@@ -164,5 +164,7 @@
 @stop
 
 @section('js')
+
+    @include('script-default-values')
     <script> console.log('Sistema desenvolvido por Agência Jobs.'); </script>
 @stop

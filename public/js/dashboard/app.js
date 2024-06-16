@@ -72,5 +72,5 @@ $(document).ready(function(){
         text-align: center;
         color: #128c7e;"
         id='whatsapp-button-suport'
-        href="https://api.whatsapp.com/send?phone=5511965966300" target="_blank"><i class="fab fa-whatsapp"></i></a>`);
+        href="https://api.whatsapp.com/send?phone=${suport_whatsapp_number}" target="_blank"><i class="fab fa-whatsapp"></i></a>`);
 });
