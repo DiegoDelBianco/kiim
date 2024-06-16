@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('customer_timelines', function (Blueprint $table) {
             $table->id();
-            $table->longText('event')->default('Cliente inserido no sistema.');
+            $table->longText('event');
             $table->integer('type')->default(5);
             $table->foreignId('user_id')->nullable()->constrained();
             $table->foreignId('customer_service_id')->nullable()->constrained();
